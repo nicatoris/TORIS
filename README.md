@@ -68,6 +68,36 @@ To generate the branded app icon / splash assets from scratch:
 node scripts/gen-assets.js
 ```
 
+## Run on your iPhone with Expo Go
+
+KSafe runs in **Expo Go** — every library it uses is bundled in the Expo Go
+runtime, and there's no custom native code. Run the dev server on your own
+computer (not a cloud container, which your phone can't reach):
+
+1. Install **Expo Go** from the App Store. It must support **SDK 52** (the
+   current App Store build does; if it only supports a newer SDK, upgrade the
+   project's Expo version).
+2. On your Mac/PC:
+   ```bash
+   npm install
+   npx expo start
+   ```
+3. Keep the computer and iPhone on the **same Wi‑Fi**, then open the **Camera**
+   app and scan the QR code in the terminal. It opens in Expo Go.
+
+On different networks? Use a tunnel:
+
+```bash
+npx expo start --tunnel
+```
+
+Notes:
+- The **Safe Schedule reminder** uses a *local* notification, which works in
+  Expo Go (iOS will prompt for permission). Only *remote push* is unsupported
+  in Expo Go — and this app doesn't use it, so you may just see a harmless
+  warning.
+- Haptics and the liquid‑glass blur render fully on a real device.
+
 ## Disclaimer
 
 KSafe is a self‑tracking aid, not medical advice. If you're managing kratom

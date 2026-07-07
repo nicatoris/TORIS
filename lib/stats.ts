@@ -26,6 +26,19 @@ export interface Stats {
   daysUntilEligible: number;
 }
 
+export const STREAK_MILESTONES: { days: number; name: string }[] = [
+  { days: 3, name: "Fresh Start" },
+  { days: 7, name: "Clear Week" },
+  { days: 14, name: "Fortnight Free" },
+  { days: 30, name: "Full Moon" },
+  { days: 90, name: "Turned Season" },
+];
+
+/** The next streak milestone above `current`, or null once all are cleared. */
+export function nextMilestone(current: number) {
+  return STREAK_MILESTONES.find((m) => m.days > current) ?? null;
+}
+
 /** Distinct, ascending list of local day keys that have at least one drink. */
 export function uniqueDrinkDays(drinks: Drink[]): string[] {
   const set = new Set(drinks.map((d) => d.date));

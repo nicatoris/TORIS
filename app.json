@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#050506"
     },
     "ios": {
       "supportsTablet": true,
@@ -24,7 +24,7 @@
       "package": "com.ksafe.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#050506"
       }
     },
     "web": {
@@ -37,7 +37,7 @@
       [
         "expo-notifications",
         {
-          "color": "#30D158"
+          "color": "#34E0A1"
         }
       ]
     ],

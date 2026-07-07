@@ -5,37 +5,36 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Neutral iOS-style surfaces (no color cast) — base black with
-        // progressively lighter grouped/elevated fills.
+        // Near-black neutral surfaces with progressively lighter fills.
         ink: {
-          900: "#000000", // app base
-          850: "#0C0C0E", // subtle raised base
-          800: "#151517", // grouped card
-          700: "#1F1F22", // elevated / input / chip
-          600: "#2E2E31", // border
-          500: "#8E8E93", // secondary label (systemGray)
+          900: "#050506", // app base
+          850: "#0C0C0E", // raised base
+          800: "#141416", // grouped card
+          700: "#1B1B1E", // elevated / input / chip
+          600: "#242427", // border
+          500: "#9A9AA2", // secondary label
         },
-        // Primary tint + Leaf Tea (kratom leaf) — iOS systemGreen
+        // Primary tint + Leaf Tea (kratom leaf) — refined emerald
         leaf: {
-          300: "#5EE187",
-          400: "#30D158",
-          500: "#30D158",
-          600: "#248A3D",
+          300: "#7BF0C4",
+          400: "#34E0A1",
+          500: "#34E0A1",
+          600: "#12B981",
         },
-        // Extract — iOS systemPurple
+        // Extract — soft violet
         extract: {
-          400: "#BF5AF2",
-          500: "#A855F7",
+          400: "#C08BFF",
+          500: "#8B5CF6",
         },
-        // Caution (schedule hold) — iOS systemOrange, used sparingly
+        // Caution (schedule hold), used sparingly
         warn: {
-          400: "#FFB340",
-          500: "#FF9F0A",
+          400: "#FFC24B",
+          500: "#FFB020",
         },
-        // Destructive — iOS systemRed
+        // Destructive
         danger: {
-          400: "#FF6961",
-          500: "#FF453A",
+          400: "#FF7A73",
+          500: "#FF5E57",
         },
         // Medal accent
         gold: {

@@ -12,10 +12,10 @@ function hexToRgb(h) {
   ];
 }
 
-const BG = hexToRgb("#000000");
+const BG = hexToRgb("#050506");
 const PANEL = hexToRgb("#151517");
-const LEAF = hexToRgb("#30D158");
-const LEAF2 = hexToRgb("#5EE187");
+const LEAF = hexToRgb("#34E0A1");
+const LEAF2 = hexToRgb("#7BF0C4");
 
 // CRC + PNG chunk plumbing
 function crc32(buf) {

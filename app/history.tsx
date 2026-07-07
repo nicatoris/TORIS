@@ -5,9 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
+import { AuroraBackground } from "@/components/AuroraBackground";
+import { Icon } from "@/components/Icon";
 import { DrinkBadge, EmptyState, ModalHeader } from "@/components/ui";
 import { formatShort, fromDayKey, MONTHS, relativeLabel } from "@/lib/dates";
 import { Drink, DrinkType } from "@/lib/types";
+import { palette } from "@/lib/theme";
 
 interface DaySummary {
   day: string;
@@ -50,6 +53,7 @@ export default function History() {
 
   return (
     <View className="flex-1 bg-ink-900">
+      <AuroraBackground />
       <View style={{ paddingTop: 20, paddingHorizontal: 20 }}>
         <ModalHeader
           title="Intake history"
@@ -61,7 +65,7 @@ export default function History() {
 
       {drinks.length === 0 ? (
         <EmptyState
-          emoji="📜"
+          icon="history"
           title="Nothing logged yet"
           body="Your kratom and extract history will appear here once you add a drink."
         />
@@ -99,15 +103,15 @@ function DayRow({
   onPress: () => void;
 }) {
   return (
-    <PressableScale onPress={onPress} className="mb-2.5" style={{ borderRadius: 20 }}>
-      <View className="flex-row items-center gap-3 rounded-4xl border border-white/[0.06] bg-ink-800 p-4">
-        <View className="h-12 w-12 items-center justify-center rounded-xl bg-ink-700">
-          <Text className="text-lg font-extrabold text-white">
+    <PressableScale onPress={onPress} className="mb-2.5" style={{ borderRadius: 24 }}>
+      <View className="flex-row items-center gap-3 rounded-4xl border border-white/[0.06] bg-white/[0.02] p-3.5">
+        <View className="h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04]">
+          <Text className="text-[18px] font-semibold text-white">
             {fromDayKey(summary.day).getDate()}
           </Text>
         </View>
         <View className="flex-1">
-          <Text className="text-sm font-bold text-white">
+          <Text className="text-[15px] font-semibold text-white">
             {formatShort(summary.day)}
           </Text>
           <Text className="text-xs text-ink-500">
@@ -120,7 +124,7 @@ function DayRow({
             <DrinkBadge key={t} type={t} />
           ))}
         </View>
-        <Text className="ml-1 text-lg text-ink-500">›</Text>
+        <Icon name="chevronRight" size={16} color={palette.label3} />
       </View>
     </PressableScale>
   );

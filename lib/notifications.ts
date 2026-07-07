@@ -28,7 +28,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
     await Notifications.setNotificationChannelAsync("eligibility", {
       name: "Safe Schedule",
       importance: Notifications.AndroidImportance.DEFAULT,
-      lightColor: "#30D158",
+      lightColor: "#34E0A1",
     });
   }
   return granted;

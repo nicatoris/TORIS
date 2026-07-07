@@ -88,10 +88,10 @@ export function GridCalendar({ drinks, weeks = 18, onSelectDay }: Props) {
       </View>
 
       {/* Legend */}
-      <View className="mt-3 flex-row items-center justify-end gap-3">
-        <Legend color="#232326" label="Clean" />
-        <Legend color="#30D158" label="Leaf tea" />
-        <Legend color="#BF5AF2" label="Extract" />
+      <View className="mt-4 flex-row items-center justify-end gap-3.5">
+        <Legend color="rgba(255,255,255,0.08)" label="Clean" />
+        <Legend color="#34E0A1" label="Leaf tea" />
+        <Legend color="#C08BFF" label="Extract" />
       </View>
     </Animated.View>
   );
@@ -106,26 +106,26 @@ function DayCell({
 }) {
   const base = cell.hasDrink
     ? cell.hasExtract
-      ? "#BF5AF2"
-      : "#30D158"
+      ? "#C08BFF"
+      : "#34E0A1"
     : cell.inRange
-      ? "#232326"
-      : "#161618";
+      ? "rgba(255,255,255,0.05)"
+      : "rgba(255,255,255,0.015)";
 
   return (
     <PressableScale
       haptic="selection"
-      activeScale={0.8}
+      activeScale={0.78}
       disabled={!cell.inRange}
       onPress={() => cell.inRange && onSelectDay?.(cell.key)}
       style={{
         width: 14,
         height: 14,
-        borderRadius: 4,
+        borderRadius: 4.5,
         marginVertical: 1.5,
         backgroundColor: base,
         borderWidth: cell.isToday ? 1.5 : 0,
-        borderColor: "#5EE187",
+        borderColor: "#7BF0C4",
       }}
     >
       <View />

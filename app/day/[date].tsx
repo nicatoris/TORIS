@@ -5,10 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
+import { AuroraBackground } from "@/components/AuroraBackground";
+import { Icon } from "@/components/Icon";
 import { Button, Card, DrinkBadge, EmptyState, ModalHeader } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { formatLong, relativeLabel } from "@/lib/dates";
-import { DRINK_META } from "@/lib/types";
+import { palette } from "@/lib/theme";
 
 export default function DayDetail() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -31,7 +33,6 @@ export default function DayDetail() {
           onPress: () => {
             deleteDrink(id);
             haptics.warning();
-            // If that was the last entry for the day, close the sheet.
             if (drinksForDay(day).length <= 1) router.back();
           },
         },
@@ -41,6 +42,7 @@ export default function DayDetail() {
 
   return (
     <View className="flex-1 bg-ink-900">
+      <AuroraBackground />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -53,65 +55,82 @@ export default function DayDetail() {
 
         {drinks.length === 0 ? (
           <EmptyState
-            emoji="🍃"
-            title="No kratom this day"
-            body="You didn't log any kratom or extract on this date — a clean day."
+            icon="leaf"
+            title="A clean day"
+            body="No kratom or extract logged on this date."
           />
         ) : (
-          drinks.map((d, i) => (
-            <Animated.View
-              key={d.id}
-              entering={FadeInDown.duration(300).delay(i * 60)}
-              className="mb-3"
-            >
-              <Card>
-                <View className="flex-row items-start justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Text className="text-3xl">{DRINK_META[d.type].emoji}</Text>
-                    <View>
-                      <Text className="text-lg font-bold text-white">
-                        {DRINK_META[d.type].label}
-                      </Text>
-                      <Text className="text-xs text-ink-500">
-                        Logged{" "}
-                        {new Date(d.createdAt).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
+          drinks.map((d, i) => {
+            const isExtract = d.type === "extract";
+            const color = isExtract ? palette.extract : palette.accent;
+            return (
+              <Animated.View
+                key={d.id}
+                entering={FadeInDown.duration(360).delay(i * 70)}
+                className="mb-3"
+              >
+                <Card>
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <View
+                        className="h-12 w-12 items-center justify-center rounded-full"
+                        style={{ backgroundColor: `${color}1A` }}
+                      >
+                        <Icon
+                          name={isExtract ? "flask" : "leaf"}
+                          size={24}
+                          color={color}
+                          strokeWidth={1.8}
+                        />
+                      </View>
+                      <View>
+                        <Text className="text-[17px] font-bold text-white">
+                          {isExtract ? "Extract" : "Leaf Tea"}
+                        </Text>
+                        <Text className="text-xs text-ink-500">
+                          Logged{" "}
+                          {new Date(d.createdAt).toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
+                        </Text>
+                      </View>
+                    </View>
+                    <DrinkBadge type={d.type} />
+                  </View>
+
+                  {d.note ? (
+                    <Text className="mt-3 rounded-2xl bg-white/[0.03] px-4 py-3 text-[14px] leading-5 text-ink-500">
+                      “{d.note}”
+                    </Text>
+                  ) : null}
+
+                  <PressableScale
+                    haptic="none"
+                    onPress={() => confirmDelete(d.id, isExtract ? "Extract" : "Leaf Tea")}
+                    className="mt-3 self-start"
+                    style={{ borderRadius: 999 }}
+                  >
+                    <View
+                      className="flex-row items-center gap-1.5 rounded-full px-4 py-2"
+                      style={{ backgroundColor: "rgba(255,94,87,0.1)" }}
+                    >
+                      <Icon name="trash" size={14} color={palette.danger} strokeWidth={2} />
+                      <Text className="text-xs font-semibold" style={{ color: palette.danger }}>
+                        Delete entry
                       </Text>
                     </View>
-                  </View>
-                  <DrinkBadge type={d.type} />
-                </View>
-
-                {d.note ? (
-                  <Text className="mt-3 rounded-2xl bg-ink-700 px-4 py-3 text-sm leading-5 text-ink-500">
-                    “{d.note}”
-                  </Text>
-                ) : null}
-
-                <PressableScale
-                  haptic="none"
-                  onPress={() => confirmDelete(d.id, DRINK_META[d.type].label)}
-                  className="mt-3 self-start"
-                  style={{ borderRadius: 999 }}
-                >
-                  <View className="flex-row items-center gap-1.5 rounded-full border border-danger-500/40 bg-danger-500/10 px-4 py-2">
-                    <Text className="text-xs">🗑️</Text>
-                    <Text className="text-xs font-bold text-danger-400">
-                      Delete entry
-                    </Text>
-                  </View>
-                </PressableScale>
-              </Card>
-            </Animated.View>
-          ))
+                  </PressableScale>
+                </Card>
+              </Animated.View>
+            );
+          })
         )}
       </ScrollView>
 
       <View
         style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900 px-5 pt-3"
+        className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900/80 px-5 pt-3"
       >
         <Button label="Close" variant="secondary" onPress={() => router.back()} />
       </View>

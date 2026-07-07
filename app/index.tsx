@@ -8,6 +8,7 @@ import { GridCalendar } from "@/components/GridCalendar";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { PressableScale } from "@/components/PressableScale";
 import { Button, Card, SectionLabel } from "@/components/ui";
+import { Glass } from "@/components/Glass";
 import { formatLong, relativeLabel } from "@/lib/dates";
 
 export default function Home() {
@@ -43,7 +44,7 @@ export default function Home() {
             onPress={() => router.push("/schedule")}
             style={{ borderRadius: 999 }}
           >
-            <View className="h-11 w-11 items-center justify-center rounded-full border border-ink-600 bg-ink-800">
+            <View className="h-11 w-11 items-center justify-center rounded-full border border-white/[0.08] bg-ink-800">
               <Text className="text-lg">🛡️</Text>
             </View>
           </PressableScale>
@@ -57,10 +58,11 @@ export default function Home() {
               <AnimatedCounter
                 value={stats.daysSinceLast}
                 style={{
-                  color: "#6EE7B7",
-                  fontSize: 96,
-                  lineHeight: 104,
-                  fontWeight: "900",
+                  color: "#30D158",
+                  fontSize: 100,
+                  lineHeight: 108,
+                  fontWeight: "800",
+                  letterSpacing: -3,
                   textAlign: "center",
                   minWidth: 120,
                 }}
@@ -145,18 +147,21 @@ export default function Home() {
         </Animated.View>
       </ScrollView>
 
-      {/* Add drink — fixed bottom */}
-      <View
-        style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 px-5 pt-3"
+      {/* Add drink — fixed liquid-glass dock */}
+      <Glass
+        topHairline
+        intensity={50}
+        className="px-5 pt-3"
+        style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
       >
-        <View className="absolute inset-0 bg-ink-900/80" />
-        <Button
-          label="Add kratom drink"
-          icon="＋"
-          onPress={() => router.push("/add-drink")}
-        />
-      </View>
+        <View style={{ paddingBottom: insets.bottom + 12 }}>
+          <Button
+            label="Add kratom drink"
+            icon="＋"
+            onPress={() => router.push("/add-drink")}
+          />
+        </View>
+      </Glass>
     </View>
   );
 }
@@ -191,10 +196,10 @@ function NavTile({
   onPress: () => void;
 }) {
   return (
-    <PressableScale onPress={onPress} className="flex-1" style={{ borderRadius: 24 }}>
-      <View className="flex-1 flex-row items-center gap-3 rounded-3xl border border-ink-600/60 bg-ink-800 p-4">
+    <PressableScale onPress={onPress} className="flex-1" style={{ borderRadius: 28 }}>
+      <View className="flex-1 flex-row items-center gap-3 rounded-4xl border border-white/[0.06] bg-ink-800 p-4">
         <Text className="text-2xl">{emoji}</Text>
-        <Text className="text-base font-bold text-white">{label}</Text>
+        <Text className="text-[17px] font-semibold text-white">{label}</Text>
       </View>
     </PressableScale>
   );
@@ -206,8 +211,8 @@ function ScheduleStatus() {
 
   if (!schedule) {
     return (
-      <PressableScale onPress={() => router.push("/schedule")} style={{ borderRadius: 24 }}>
-        <View className="flex-row items-center gap-3 rounded-3xl border border-dashed border-ink-600 bg-ink-800/60 p-4">
+      <PressableScale onPress={() => router.push("/schedule")} style={{ borderRadius: 28 }}>
+        <View className="flex-row items-center gap-3 rounded-4xl border border-dashed border-ink-600 bg-ink-800/60 p-4">
           <Text className="text-2xl">🛡️</Text>
           <View className="flex-1">
             <Text className="text-sm font-bold text-white">
@@ -225,12 +230,12 @@ function ScheduleStatus() {
 
   const eligible = stats.canDrink;
   return (
-    <PressableScale onPress={() => router.push("/schedule")} style={{ borderRadius: 24 }}>
+    <PressableScale onPress={() => router.push("/schedule")} style={{ borderRadius: 28 }}>
       <View
-        className={`rounded-3xl border p-5 ${
+        className={`rounded-4xl border p-5 ${
           eligible
-            ? "border-leaf-500/40 bg-leaf-500/10"
-            : "border-tea-500/40 bg-tea-500/10"
+            ? "border-leaf-500/30 bg-leaf-500/10"
+            : "border-warn-500/30 bg-warn-500/10"
         }`}
       >
         <View className="flex-row items-center justify-between">
@@ -243,7 +248,7 @@ function ScheduleStatus() {
           </Text>
         ) : (
           <>
-            <Text className="text-lg font-extrabold text-tea-400">
+            <Text className="text-lg font-extrabold text-warn-400">
               Hold off — {stats.daysUntilEligible}{" "}
               {stats.daysUntilEligible === 1 ? "day" : "days"} to go
             </Text>

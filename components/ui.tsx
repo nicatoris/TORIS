@@ -13,7 +13,7 @@ export function Card({
   return (
     <View
       {...rest}
-      className={`rounded-3xl border border-ink-600/60 bg-ink-800 p-5 ${className}`}
+      className={`rounded-4xl border border-white/[0.06] bg-ink-800 p-5 ${className}`}
     >
       {children}
     </View>
@@ -47,12 +47,12 @@ export function Button({
 }: ButtonProps) {
   const styles: Record<NonNullable<ButtonProps["variant"]>, string> = {
     primary: "bg-leaf-500",
-    secondary: "bg-ink-600",
-    ghost: "bg-transparent border border-ink-600",
-    danger: "bg-danger-500/15 border border-danger-500/40",
+    secondary: "bg-ink-700",
+    ghost: "bg-transparent border border-white/[0.08]",
+    danger: "bg-danger-500/15",
   };
   const textStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
-    primary: "text-ink-900",
+    primary: "text-white",
     secondary: "text-white",
     ghost: "text-ink-500",
     danger: "text-danger-400",
@@ -68,8 +68,8 @@ export function Button({
       <View
         className={`flex-row items-center justify-center gap-2 rounded-full px-6 py-4 ${styles[variant]}`}
       >
-        {icon ? <Text className="text-base">{icon}</Text> : null}
-        <Text className={`text-base font-bold ${textStyles[variant]}`}>
+        {icon ? <Text className="text-[17px]">{icon}</Text> : null}
+        <Text className={`text-[17px] font-semibold ${textStyles[variant]}`}>
           {label}
         </Text>
       </View>
@@ -112,8 +112,8 @@ export function DrinkBadge({ type }: { type: DrinkType }) {
   const tint =
     type === "extract"
       ? "bg-extract-500/15 border-extract-500/40"
-      : "bg-tea-500/15 border-tea-500/40";
-  const text = type === "extract" ? "text-extract-400" : "text-tea-400";
+      : "bg-leaf-500/15 border-leaf-500/40";
+  const text = type === "extract" ? "text-extract-400" : "text-leaf-400";
   return (
     <View
       className={`flex-row items-center gap-1.5 self-start rounded-full border px-3 py-1 ${tint}`}

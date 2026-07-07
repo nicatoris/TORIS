@@ -89,9 +89,9 @@ export function GridCalendar({ drinks, weeks = 18, onSelectDay }: Props) {
 
       {/* Legend */}
       <View className="mt-3 flex-row items-center justify-end gap-3">
-        <Legend color="#1E2A38" label="Clean" />
-        <Legend color="#34D399" label="Leaf tea" />
-        <Legend color="#A855F7" label="Extract" />
+        <Legend color="#232326" label="Clean" />
+        <Legend color="#30D158" label="Leaf tea" />
+        <Legend color="#BF5AF2" label="Extract" />
       </View>
     </Animated.View>
   );
@@ -106,11 +106,11 @@ function DayCell({
 }) {
   const base = cell.hasDrink
     ? cell.hasExtract
-      ? "#A855F7"
-      : "#34D399"
+      ? "#BF5AF2"
+      : "#30D158"
     : cell.inRange
-      ? "#1A2530"
-      : "#141C25";
+      ? "#232326"
+      : "#161618";
 
   return (
     <PressableScale
@@ -125,7 +125,7 @@ function DayCell({
         marginVertical: 1.5,
         backgroundColor: base,
         borderWidth: cell.isToday ? 1.5 : 0,
-        borderColor: "#6EE7B7",
+        borderColor: "#5EE187",
       }}
     >
       <View />

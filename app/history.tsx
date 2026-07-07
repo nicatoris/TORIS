@@ -100,7 +100,7 @@ function DayRow({
 }) {
   return (
     <PressableScale onPress={onPress} className="mb-2.5" style={{ borderRadius: 20 }}>
-      <View className="flex-row items-center gap-3 rounded-2xl border border-ink-600/60 bg-ink-800 p-4">
+      <View className="flex-row items-center gap-3 rounded-4xl border border-white/[0.06] bg-ink-800 p-4">
         <View className="h-12 w-12 items-center justify-center rounded-xl bg-ink-700">
           <Text className="text-lg font-extrabold text-white">
             {fromDayKey(summary.day).getDate()}

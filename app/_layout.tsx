@@ -18,7 +18,7 @@ function RootNavigator() {
   if (!ready) {
     return (
       <View className="flex-1 items-center justify-center bg-ink-900">
-        <ActivityIndicator color="#34D399" />
+        <ActivityIndicator color="#30D158" />
       </View>
     );
   }
@@ -27,7 +27,7 @@ function RootNavigator() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#0B0F14" },
+        contentStyle: { backgroundColor: "#000000" },
       }}
     >
       <Stack.Screen name="index" />

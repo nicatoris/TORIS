@@ -24,10 +24,10 @@ export const TIER_META: Record<
   MedalTier,
   { label: string; ring: string; text: string; glow: string }
 > = {
-  bronze: { label: "Bronze", ring: "#B45309", text: "#FCD9A8", glow: "#F59E0B" },
-  silver: { label: "Silver", ring: "#94A3B8", text: "#E2E8F0", glow: "#CBD5E1" },
-  gold: { label: "Gold", ring: "#EAB308", text: "#FDE68A", glow: "#FCD34D" },
-  platinum: { label: "Platinum", ring: "#22D3EE", text: "#CFFAFE", glow: "#67E8F9" },
+  bronze: { label: "Bronze", ring: "#B87333", text: "#E9C9A6", glow: "#C88A5A" },
+  silver: { label: "Silver", ring: "#9AA0A6", text: "#E8EAED", glow: "#B8BDC4" },
+  gold: { label: "Gold", ring: "#D4A93A", text: "#F1DD9B", glow: "#E7C868" },
+  platinum: { label: "Platinum", ring: "#6BD0DE", text: "#D6F5FA", glow: "#8FDCE8" },
 };
 
 const streakMedal = (

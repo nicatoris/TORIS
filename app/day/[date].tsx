@@ -111,7 +111,7 @@ export default function DayDetail() {
 
       <View
         style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 border-t border-ink-700 bg-ink-900 px-5 pt-3"
+        className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900 px-5 pt-3"
       >
         <Button label="Close" variant="secondary" onPress={() => router.back()} />
       </View>

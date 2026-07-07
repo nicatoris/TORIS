@@ -113,8 +113,9 @@ export default function ScheduleScreen() {
               haptics.light();
               setNotify(v);
             }}
-            trackColor={{ false: "#1E2A38", true: "#10B981" }}
-            thumbColor="#F8FAFC"
+            trackColor={{ false: "#39393D", true: "#30D158" }}
+            thumbColor="#FFFFFF"
+            ios_backgroundColor="#39393D"
           />
         </Card>
 
@@ -128,7 +129,7 @@ export default function ScheduleScreen() {
                   You're eligible to drink kratom today.
                 </Text>
               ) : (
-                <Text className="text-base font-bold text-tea-400">
+                <Text className="text-base font-bold text-warn-400">
                   {stats.daysUntilEligible} more{" "}
                   {stats.daysUntilEligible === 1 ? "day" : "days"} · eligible{" "}
                   {formatLong(stats.nextEligibleDay!)}
@@ -141,7 +142,7 @@ export default function ScheduleScreen() {
 
       <View
         style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 gap-2 border-t border-ink-700 bg-ink-900 px-5 pt-3"
+        className="absolute inset-x-0 bottom-0 gap-2 border-t border-white/[0.06] bg-ink-900 px-5 pt-3"
       >
         <Button
           label={saving ? "Saving…" : isEditing ? "Update schedule" : "Create schedule"}

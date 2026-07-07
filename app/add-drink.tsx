@@ -138,7 +138,7 @@ export default function AddDrink() {
             value={note}
             onChangeText={setNote}
             placeholder="Dose, brand, how you felt…"
-            placeholderTextColor="#3A4A5D"
+            placeholderTextColor="#6B6B70"
             multiline
             className="min-h-[64px] rounded-2xl border border-ink-600 bg-ink-800 px-4 py-3 text-base text-white"
             style={{ textAlignVertical: "top" }}
@@ -147,7 +147,7 @@ export default function AddDrink() {
 
         <View
           style={{ paddingBottom: insets.bottom + 12 }}
-          className="absolute inset-x-0 bottom-0 border-t border-ink-700 bg-ink-900 px-5 pt-3"
+          className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900 px-5 pt-3"
         >
           <Button
             label={canSave ? "Log drink" : "Choose a type first"}
@@ -184,7 +184,7 @@ function TypeCard({
         ? "border-extract-400 bg-extract-500/15"
         : "border-ink-600 bg-ink-800"
       : selected
-        ? "border-tea-400 bg-tea-500/15"
+        ? "border-leaf-400 bg-leaf-500/15"
         : "border-ink-600 bg-ink-800";
 
   return (
@@ -200,7 +200,7 @@ function TypeCard({
             <Animated.View entering={FadeIn.duration(200)} className="mt-3">
               <Text
                 className={`text-xs font-bold ${
-                  type === "extract" ? "text-extract-400" : "text-tea-400"
+                  type === "extract" ? "text-extract-400" : "text-leaf-400"
                 }`}
               >
                 ✓ Selected

@@ -43,7 +43,7 @@ export default function Medals() {
             emoji="🔥"
             label="Current streak"
             value={stats.currentStreak}
-            accent="text-danger-400"
+            accent="text-leaf-400"
           />
           <StreakCard
             emoji="🏅"
@@ -111,8 +111,8 @@ function MedalCard({ medal }: { medal: EvaluatedMedal }) {
     <View
       className="h-full rounded-3xl border p-4"
       style={{
-        borderColor: medal.earned ? tier.ring : "#1E2A38",
-        backgroundColor: medal.earned ? `${tier.glow}14` : "#111820",
+        borderColor: medal.earned ? `${tier.ring}66` : "#2E2E31",
+        backgroundColor: medal.earned ? `${tier.glow}14` : "#151517",
       }}
     >
       <View className="flex-row items-center justify-between">

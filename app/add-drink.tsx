@@ -23,7 +23,7 @@ import { Icon } from "@/components/Icon";
 import { Button, ModalHeader, SectionLabel } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { addDays, formatShort, relativeLabel, todayKey } from "@/lib/dates";
-import { DrinkType, DRINK_META } from "@/lib/types";
+import { DrinkType, DRINK_META, EXTRACT_MG_PRESETS } from "@/lib/types";
 import { palette, shadow, springs } from "@/lib/theme";
 
 export default function AddDrink() {
@@ -34,6 +34,7 @@ export default function AddDrink() {
   const [type, setType] = useState<DrinkType | null>(null);
   const [date, setDate] = useState<string>(todayKey());
   const [note, setNote] = useState("");
+  const [mgText, setMgText] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
 
   const days = useMemo(() => {
@@ -41,16 +42,29 @@ export default function AddDrink() {
     return Array.from({ length: 30 }, (_, i) => addDays(today, -i));
   }, []);
 
+  const mg = parseInt(mgText, 10) || null;
   const canSave = type !== null;
+
+  function selectType(t: DrinkType) {
+    haptics.selection();
+    setType(t);
+    if (t !== "extract") setMgText("");
+  }
 
   function save() {
     if (!type) {
       haptics.warning();
       return;
     }
-    addDrink({ type, date, note });
+    addDrink({
+      type,
+      date,
+      note,
+      mg: type === "extract" && mg ? mg : undefined,
+    });
     haptics.success();
-    setSuccess(`${DRINK_META[type].label} logged`);
+    const dose = type === "extract" && mg ? ` · ${mg} mg` : "";
+    setSuccess(`${DRINK_META[type].label} logged${dose}`);
   }
 
   return (
@@ -78,13 +92,75 @@ export default function AddDrink() {
                 key={t}
                 type={t}
                 selected={type === t}
-                onSelect={() => {
-                  haptics.selection();
-                  setType(t);
-                }}
+                onSelect={() => selectType(t)}
               />
             ))}
           </View>
+
+          {type === "extract" ? (
+            <Animated.View entering={FadeIn.duration(220)} className="mb-7">
+              <SectionLabel>Extract dose</SectionLabel>
+              <View className="mt-3 flex-row gap-2.5">
+                {EXTRACT_MG_PRESETS.map((p) => {
+                  const on = mg === p;
+                  return (
+                    <PressableScale
+                      key={p}
+                      haptic="selection"
+                      onPress={() => setMgText(String(p))}
+                      className="flex-1"
+                      style={{ borderRadius: 18 }}
+                    >
+                      <View
+                        className="flex-row items-baseline justify-center gap-1 rounded-[18px] border py-4"
+                        style={{
+                          borderColor: on ? palette.extract : palette.hairline,
+                          borderWidth: on ? 1.5 : 1,
+                          backgroundColor: on ? `${palette.extract}12` : palette.card,
+                          ...(on ? null : shadow.card),
+                        }}
+                      >
+                        <Text
+                          className="text-[18px] font-bold"
+                          style={{ color: on ? palette.extract : palette.label }}
+                        >
+                          {p}
+                        </Text>
+                        <Text
+                          className="text-[11px] font-semibold"
+                          style={{ color: on ? palette.extract : palette.label3 }}
+                        >
+                          mg
+                        </Text>
+                      </View>
+                    </PressableScale>
+                  );
+                })}
+              </View>
+              {/* Custom amount */}
+              <View
+                className="mt-2.5 flex-row items-center rounded-[18px] border bg-paper-card px-4"
+                style={{
+                  borderColor:
+                    mg && !EXTRACT_MG_PRESETS.includes(mg) ? palette.extract : palette.hairline,
+                  borderWidth: mg && !EXTRACT_MG_PRESETS.includes(mg) ? 1.5 : 1,
+                  height: 54,
+                  ...shadow.card,
+                }}
+              >
+                <TextInput
+                  value={mgText}
+                  onChangeText={(t) => setMgText(t.replace(/[^0-9]/g, "").slice(0, 4))}
+                  placeholder="Custom amount"
+                  placeholderTextColor={palette.label3}
+                  keyboardType="number-pad"
+                  className="flex-1 text-[16px] font-semibold text-ink-900"
+                  style={{ padding: 0 }}
+                />
+                <Text className="text-[13px] font-semibold text-ink-400">mg</Text>
+              </View>
+            </Animated.View>
+          ) : null}
 
           <SectionLabel>When</SectionLabel>
           <ScrollView

@@ -24,6 +24,14 @@ export interface Stats {
   nextEligibleDay: string | null;
   /** Days remaining until eligible (0 when eligible) */
   daysUntilEligible: number;
+  /** Total extract mg logged today */
+  todayExtractMg: number;
+  /** Daily extract mg limit from schedule, or null if none set */
+  mgLimit: number | null;
+  /** mg left before hitting the limit (null when no limit) */
+  mgRemaining: number | null;
+  /** Whether today's extract intake exceeds the limit */
+  overMgLimit: boolean;
 }
 
 export const STREAK_MILESTONES: { days: number; name: string }[] = [
@@ -103,6 +111,15 @@ export function computeStats(drinks: Drink[], schedule: Schedule | null): Stats 
     }
   }
 
+  // Today's extract intake vs. the schedule's daily mg limit.
+  const todayExtractMg = drinks.reduce(
+    (sum, d) => (d.type === "extract" && d.date === today && d.mg ? sum + d.mg : sum),
+    0,
+  );
+  const mgLimit = schedule?.mgLimit && schedule.mgLimit > 0 ? schedule.mgLimit : null;
+  const mgRemaining = mgLimit != null ? Math.max(0, mgLimit - todayExtractMg) : null;
+  const overMgLimit = mgLimit != null && todayExtractMg > mgLimit;
+
   return {
     hasData,
     drinkDays,
@@ -115,5 +132,9 @@ export function computeStats(drinks: Drink[], schedule: Schedule | null): Stats 
     canDrink,
     nextEligibleDay,
     daysUntilEligible,
+    todayExtractMg,
+    mgLimit,
+    mgRemaining,
+    overMgLimit,
   };
 }

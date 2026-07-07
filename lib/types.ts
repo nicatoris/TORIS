@@ -11,6 +11,8 @@ export interface Drink {
   createdAt: number;
   /** Optional free-form note */
   note?: string;
+  /** Mitragynine extract dose in mg (extract drinks only) */
+  mg?: number;
 }
 
 export interface Schedule {
@@ -20,7 +22,12 @@ export interface Schedule {
   createdAt: number;
   /** Whether to fire a local notification when the user becomes eligible */
   notifyEnabled: boolean;
+  /** Daily extract limit in mg; 0 / undefined means no limit */
+  mgLimit?: number;
 }
+
+/** Quick-pick extract doses shown when logging. */
+export const EXTRACT_MG_PRESETS = [30, 50, 100];
 
 export interface PersistedState {
   drinks: Drink[];

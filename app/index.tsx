@@ -111,6 +111,33 @@ export default function Home() {
           <Text className="mt-1 text-[15px] text-ink-500">
             {stats.daysSinceLast === 1 ? "day" : "days"}
           </Text>
+
+          {stats.todayExtractMg > 0 ? (
+            <Animated.View entering={FadeIn.duration(400).delay(400)} className="mt-4">
+              <View
+                className="flex-row items-center gap-2 rounded-full px-3.5 py-2"
+                style={{
+                  backgroundColor: stats.overMgLimit
+                    ? "rgba(180,68,60,0.12)"
+                    : `${palette.extract}14`,
+                }}
+              >
+                <Icon
+                  name="flask"
+                  size={14}
+                  color={stats.overMgLimit ? palette.danger : palette.extract}
+                  strokeWidth={2}
+                />
+                <Text
+                  className="text-[13px] font-semibold"
+                  style={{ color: stats.overMgLimit ? palette.danger : palette.extract }}
+                >
+                  {stats.todayExtractMg}
+                  {stats.mgLimit != null ? ` / ${stats.mgLimit}` : ""} mg extract today
+                </Text>
+              </View>
+            </Animated.View>
+          ) : null}
         </Animated.View>
 
         {/* Progress rule */}

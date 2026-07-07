@@ -16,6 +16,7 @@ interface DaySummary {
   day: string;
   drinks: Drink[];
   types: DrinkType[];
+  extractMg: number;
 }
 
 export default function History() {
@@ -36,6 +37,7 @@ export default function History() {
         day,
         drinks: list,
         types: [...new Set(list.map((d) => d.type))],
+        extractMg: list.reduce((s, d) => s + (d.mg ?? 0), 0),
       }))
       .sort((a, b) => (a.day < b.day ? 1 : -1)); // newest first
 
@@ -117,6 +119,7 @@ function DayRow({
           <Text className="text-xs text-ink-500">
             {relativeLabel(summary.day)} ·{" "}
             {summary.drinks.length} {summary.drinks.length === 1 ? "drink" : "drinks"}
+            {summary.extractMg > 0 ? ` · ${summary.extractMg} mg` : ""}
           </Text>
         </View>
         <View className="flex-row gap-1.5">

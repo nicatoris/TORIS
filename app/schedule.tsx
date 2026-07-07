@@ -13,14 +13,13 @@ import { haptics } from "@/lib/haptics";
 import { formatLong } from "@/lib/dates";
 import { palette, serif, shadow } from "@/lib/theme";
 
-const PRESETS = [1, 2, 3, 5, 7, 14];
-
 export default function ScheduleScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { schedule, stats, setSchedule, clearSchedule } = useKratom();
 
   const [days, setDays] = useState<number>(schedule?.daysOff ?? 3);
+  const [mgLimit, setMgLimit] = useState<number>(schedule?.mgLimit ?? 0);
   const [notify, setNotify] = useState<boolean>(schedule?.notifyEnabled ?? false);
   const [saving, setSaving] = useState(false);
   const isEditing = !!schedule;
@@ -30,9 +29,14 @@ export default function ScheduleScreen() {
     setDays((d) => Math.min(90, Math.max(1, d + delta)));
   }
 
+  function bumpMg(delta: number) {
+    haptics.selection();
+    setMgLimit((m) => Math.min(1000, Math.max(0, m + delta)));
+  }
+
   async function save() {
     setSaving(true);
-    await setSchedule(days, notify);
+    await setSchedule(days, notify, mgLimit);
     haptics.success();
     setSaving(false);
     router.back();
@@ -81,37 +85,40 @@ export default function ScheduleScreen() {
             </View>
             <StepButton icon="plus" onPress={() => bump(1)} />
           </View>
+        </View>
 
-          <View className="mt-6 flex-row flex-wrap justify-center gap-2 px-4">
-            {PRESETS.map((p) => {
-              const on = days === p;
-              return (
-                <PressableScale
-                  key={p}
-                  haptic="selection"
-                  onPress={() => {
-                    haptics.selection();
-                    setDays(p);
-                  }}
-                  style={{ borderRadius: 999 }}
-                >
-                  <View
-                    className="rounded-full border px-4 py-2"
-                    style={{
-                      borderColor: on ? palette.accent : palette.hairline,
-                      backgroundColor: on ? palette.accentSoft : "transparent",
-                    }}
+        {/* Daily extract limit */}
+        <View
+          className="mt-3 items-center rounded-3xl border border-ink-900/[0.06] bg-paper-card py-8"
+          style={shadow.card}
+        >
+          <SectionLabel>Daily extract limit</SectionLabel>
+          <View className="mt-4 flex-row items-center gap-7">
+            <StepButton icon="minus" onPress={() => bumpMg(-25)} />
+            <View className="items-center" style={{ minWidth: 150 }}>
+              {mgLimit > 0 ? (
+                <View className="flex-row items-baseline">
+                  <Text
+                    className="text-ink-900"
+                    style={{ fontFamily: serif, fontSize: 68, lineHeight: 74, letterSpacing: -1 }}
                   >
-                    <Text
-                      className="text-[13px] font-semibold"
-                      style={{ color: on ? palette.accent : palette.label2 }}
-                    >
-                      {p}d
-                    </Text>
-                  </View>
-                </PressableScale>
-              );
-            })}
+                    {mgLimit}
+                  </Text>
+                  <Text className="ml-1 text-[16px] font-semibold text-ink-500">mg</Text>
+                </View>
+              ) : (
+                <Text
+                  className="text-ink-400"
+                  style={{ fontFamily: serif, fontSize: 34, lineHeight: 74 }}
+                >
+                  No limit
+                </Text>
+              )}
+              <Text className="-mt-1 text-[13px] text-ink-500">
+                {mgLimit > 0 ? "of extract per day" : "extract not capped"}
+              </Text>
+            </View>
+            <StepButton icon="plus" onPress={() => bumpMg(25)} />
           </View>
         </View>
 
@@ -145,6 +152,14 @@ export default function ScheduleScreen() {
                   ? "You're eligible to drink today."
                   : `${stats.daysUntilEligible} more ${stats.daysUntilEligible === 1 ? "day" : "days"} · opens ${formatLong(stats.nextEligibleDay!)}`}
               </Text>
+              {mgLimit > 0 ? (
+                <Text
+                  className="mt-1 text-[13px] font-medium"
+                  style={{ color: stats.todayExtractMg > mgLimit ? palette.danger : palette.label2 }}
+                >
+                  {stats.todayExtractMg} of {mgLimit} mg extract used today
+                </Text>
+              ) : null}
             </Card>
           </Animated.View>
         ) : null}

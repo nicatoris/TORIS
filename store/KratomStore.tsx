@@ -33,10 +33,19 @@ interface KratomContextValue {
   schedule: Schedule | null;
   earnedMedals: Record<string, number>;
   stats: Stats;
-  addDrink: (input: { type: DrinkType; date: string; note?: string }) => void;
+  addDrink: (input: {
+    type: DrinkType;
+    date: string;
+    note?: string;
+    mg?: number;
+  }) => void;
   deleteDrink: (id: string) => void;
   drinksForDay: (day: string) => Drink[];
-  setSchedule: (daysOff: number, notifyEnabled: boolean) => Promise<void>;
+  setSchedule: (
+    daysOff: number,
+    notifyEnabled: boolean,
+    mgLimit?: number,
+  ) => Promise<void>;
   clearSchedule: () => Promise<void>;
   toggleScheduleNotify: (enabled: boolean) => Promise<void>;
   resetAll: () => void;
@@ -98,13 +107,24 @@ export function KratomProvider({ children }: { children: React.ReactNode }) {
   }, [ready, stats, state.schedule, state.earnedMedals]);
 
   const addDrink = useCallback(
-    ({ type, date, note }: { type: DrinkType; date: string; note?: string }) => {
+    ({
+      type,
+      date,
+      note,
+      mg,
+    }: {
+      type: DrinkType;
+      date: string;
+      note?: string;
+      mg?: number;
+    }) => {
       const drink: Drink = {
         id: makeId(),
         type,
         date,
         createdAt: Date.now(),
         note: note?.trim() ? note.trim() : undefined,
+        mg: type === "extract" && mg && mg > 0 ? Math.round(mg) : undefined,
       };
       setState((s) => ({
         ...s,
@@ -140,7 +160,7 @@ export function KratomProvider({ children }: { children: React.ReactNode }) {
   );
 
   const setSchedule = useCallback(
-    async (daysOff: number, notifyEnabled: boolean) => {
+    async (daysOff: number, notifyEnabled: boolean, mgLimit?: number) => {
       let allowNotify = notifyEnabled;
       if (notifyEnabled) {
         allowNotify = await requestNotificationPermission();
@@ -149,6 +169,7 @@ export function KratomProvider({ children }: { children: React.ReactNode }) {
         daysOff: Math.max(1, Math.round(daysOff)),
         createdAt: Date.now(),
         notifyEnabled: allowNotify,
+        mgLimit: mgLimit && mgLimit > 0 ? Math.round(mgLimit) : undefined,
       };
       setState((s) => ({ ...s, schedule }));
       await syncReminder(schedule);

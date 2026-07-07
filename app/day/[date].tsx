@@ -86,6 +86,9 @@ export default function DayDetail() {
                       <View>
                         <Text className="text-[17px] font-bold text-ink-900">
                           {isExtract ? "Extract" : "Leaf Tea"}
+                          {isExtract && d.mg ? (
+                            <Text style={{ color: palette.extract }}> · {d.mg} mg</Text>
+                          ) : null}
                         </Text>
                         <Text className="text-xs text-ink-500">
                           Logged{" "}

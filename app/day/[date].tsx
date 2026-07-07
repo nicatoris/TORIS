@@ -5,12 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
-import { AuroraBackground } from "@/components/AuroraBackground";
+import { PaperBackground } from "@/components/PaperBackground";
 import { Icon } from "@/components/Icon";
 import { Button, Card, DrinkBadge, EmptyState, ModalHeader } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { formatLong, relativeLabel } from "@/lib/dates";
-import { palette } from "@/lib/theme";
+import { palette, shadow } from "@/lib/theme";
 
 export default function DayDetail() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -41,8 +41,8 @@ export default function DayDetail() {
   }
 
   return (
-    <View className="flex-1 bg-ink-900">
-      <AuroraBackground />
+    <View className="flex-1 bg-paper">
+      <PaperBackground />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -84,7 +84,7 @@ export default function DayDetail() {
                         />
                       </View>
                       <View>
-                        <Text className="text-[17px] font-bold text-white">
+                        <Text className="text-[17px] font-bold text-ink-900">
                           {isExtract ? "Extract" : "Leaf Tea"}
                         </Text>
                         <Text className="text-xs text-ink-500">
@@ -100,7 +100,7 @@ export default function DayDetail() {
                   </View>
 
                   {d.note ? (
-                    <Text className="mt-3 rounded-2xl bg-white/[0.03] px-4 py-3 text-[14px] leading-5 text-ink-500">
+                    <Text className="mt-3 rounded-2xl bg-ink-900/[0.03] px-4 py-3 text-[14px] leading-5 text-ink-700">
                       “{d.note}”
                     </Text>
                   ) : null}
@@ -113,7 +113,7 @@ export default function DayDetail() {
                   >
                     <View
                       className="flex-row items-center gap-1.5 rounded-full px-4 py-2"
-                      style={{ backgroundColor: "rgba(255,94,87,0.1)" }}
+                      style={{ backgroundColor: "rgba(180,68,60,0.10)" }}
                     >
                       <Icon name="trash" size={14} color={palette.danger} strokeWidth={2} />
                       <Text className="text-xs font-semibold" style={{ color: palette.danger }}>
@@ -129,8 +129,8 @@ export default function DayDetail() {
       </ScrollView>
 
       <View
-        style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900/80 px-5 pt-3"
+        style={{ paddingBottom: insets.bottom + 12, ...shadow.float }}
+        className="absolute inset-x-0 bottom-0 border-t border-ink-900/[0.06] bg-paper px-5 pt-3"
       >
         <Button label="Close" variant="secondary" onPress={() => router.back()} />
       </View>

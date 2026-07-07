@@ -70,8 +70,8 @@ export function SuccessBurst({ label, onDone }: Props) {
 
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.center, overlay]} pointerEvents="none">
-      <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(5,5,6,0.55)" }]} />
+      <BlurView intensity={24} tint="light" style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(244,241,233,0.6)" }]} />
       <Animated.View style={[styles.center, badge]}>
         <Svg width={110} height={110} viewBox="0 0 100 100">
           <AnimatedCircle

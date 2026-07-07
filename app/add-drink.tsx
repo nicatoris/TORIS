@@ -17,14 +17,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
-import { AuroraBackground } from "@/components/AuroraBackground";
+import { PaperBackground } from "@/components/PaperBackground";
 import { SuccessBurst } from "@/components/SuccessBurst";
 import { Icon } from "@/components/Icon";
 import { Button, ModalHeader, SectionLabel } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { addDays, formatShort, relativeLabel, todayKey } from "@/lib/dates";
 import { DrinkType, DRINK_META } from "@/lib/types";
-import { palette, springs } from "@/lib/theme";
+import { palette, shadow, springs } from "@/lib/theme";
 
 export default function AddDrink() {
   const router = useRouter();
@@ -58,14 +58,14 @@ export default function AddDrink() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <View className="flex-1 bg-ink-900">
-        <AuroraBackground />
+      <View className="flex-1 bg-paper">
+        <PaperBackground />
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             paddingTop: 20,
-            paddingHorizontal: 20,
+            paddingHorizontal: 22,
             paddingBottom: insets.bottom + 120,
           }}
         >
@@ -102,13 +102,14 @@ export default function AddDrink() {
                   key={d}
                   haptic="selection"
                   onPress={() => setDate(d)}
-                  style={{ borderRadius: 20 }}
+                  style={{ borderRadius: 18 }}
                 >
                   <View
-                    className="items-center rounded-[20px] border px-4 py-3"
+                    className="items-center rounded-[18px] border px-4 py-3"
                     style={{
-                      borderColor: selected ? `${palette.accent}66` : "rgba(255,255,255,0.06)",
-                      backgroundColor: selected ? `${palette.accent}14` : "rgba(255,255,255,0.02)",
+                      borderColor: selected ? palette.accent : palette.hairline,
+                      backgroundColor: selected ? palette.accentSoft : palette.card,
+                      ...(selected ? null : shadow.card),
                     }}
                   >
                     <Text
@@ -128,7 +129,7 @@ export default function AddDrink() {
               );
             })}
           </ScrollView>
-          <Text className="mb-7 text-xs text-ink-500">
+          <Text className="mb-7 text-xs text-ink-400">
             {relativeLabel(date)} · {formatShort(date)}
           </Text>
 
@@ -139,14 +140,14 @@ export default function AddDrink() {
             placeholder="Dose, brand, how you felt…"
             placeholderTextColor={palette.label3}
             multiline
-            className="mt-3 min-h-[70px] rounded-3xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 text-[15px] text-white"
-            style={{ textAlignVertical: "top" }}
+            className="mt-3 min-h-[72px] rounded-3xl border border-ink-900/[0.08] bg-paper-card px-4 py-3.5 text-[15px] text-ink-900"
+            style={{ textAlignVertical: "top", ...shadow.card }}
           />
         </ScrollView>
 
         <View
-          style={{ paddingBottom: insets.bottom + 12 }}
-          className="absolute inset-x-0 bottom-0 border-t border-white/[0.06] bg-ink-900/80 px-5 pt-3"
+          style={{ paddingBottom: insets.bottom + 12, ...shadow.float }}
+          className="absolute inset-x-0 bottom-0 border-t border-ink-900/[0.06] bg-paper px-5 pt-3"
         >
           <Button
             label={canSave ? "Log drink" : "Choose a type first"}
@@ -185,12 +186,14 @@ function TypeCard({
 
   return (
     <Animated.View style={style} className="flex-1">
-      <PressableScale onPress={onSelect} haptic="none" style={{ borderRadius: 28 }}>
+      <PressableScale onPress={onSelect} haptic="none" style={{ borderRadius: 26 }}>
         <View
-          className="items-center overflow-hidden rounded-4xl border px-4 py-6"
+          className="items-center overflow-hidden rounded-3xl border px-4 py-6"
           style={{
-            borderColor: selected ? `${color}80` : "rgba(255,255,255,0.06)",
-            backgroundColor: selected ? `${color}12` : "rgba(255,255,255,0.02)",
+            borderColor: selected ? color : palette.hairline,
+            borderWidth: selected ? 1.5 : 1,
+            backgroundColor: selected ? `${color}12` : palette.card,
+            ...shadow.card,
           }}
         >
           {selected ? (
@@ -199,16 +202,16 @@ function TypeCard({
               className="absolute right-3 top-3 h-6 w-6 items-center justify-center rounded-full"
               style={{ backgroundColor: color }}
             >
-              <Icon name="check" size={14} color="#04140D" strokeWidth={2.6} />
+              <Icon name="check" size={14} color={palette.onAccent} strokeWidth={2.6} />
             </Animated.View>
           ) : null}
           <View
             className="h-16 w-16 items-center justify-center rounded-full"
-            style={{ backgroundColor: `${color}1A` }}
+            style={{ backgroundColor: `${color}16` }}
           >
             <Icon name={isExtract ? "flask" : "leaf"} size={30} color={color} strokeWidth={1.8} />
           </View>
-          <Text className="mt-4 text-[17px] font-bold text-white">{meta.label}</Text>
+          <Text className="mt-4 text-[17px] font-bold text-ink-900">{meta.label}</Text>
           <Text className="mt-1 text-center text-[11px] leading-4 text-ink-500">
             {meta.blurb}
           </Text>

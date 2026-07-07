@@ -17,8 +17,8 @@ function RootNavigator() {
 
   if (!ready) {
     return (
-      <View className="flex-1 items-center justify-center bg-ink-900">
-        <ActivityIndicator color="#34E0A1" />
+      <View className="flex-1 items-center justify-center bg-paper">
+        <ActivityIndicator color="#2F5D45" />
       </View>
     );
   }
@@ -27,7 +27,7 @@ function RootNavigator() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#050506" },
+        contentStyle: { backgroundColor: "#F4F1E9" },
       }}
     >
       <Stack.Screen name="index" />
@@ -45,7 +45,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <KratomProvider>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <RootNavigator />
         </KratomProvider>
       </SafeAreaProvider>

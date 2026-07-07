@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
-import { AuroraBackground } from "@/components/AuroraBackground";
+import { PaperBackground } from "@/components/PaperBackground";
 import { Toggle } from "@/components/Toggle";
 import { Icon } from "@/components/Icon";
 import { Button, Card, ModalHeader, SectionLabel } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { formatLong } from "@/lib/dates";
-import { palette } from "@/lib/theme";
+import { palette, serif, shadow } from "@/lib/theme";
 
 const PRESETS = [1, 2, 3, 5, 7, 14];
 
@@ -45,13 +45,13 @@ export default function ScheduleScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ink-900">
-      <AuroraBackground />
+    <View className="flex-1 bg-paper">
+      <PaperBackground />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: 20,
-          paddingHorizontal: 20,
+          paddingHorizontal: 22,
           paddingBottom: insets.bottom + 150,
         }}
       >
@@ -61,14 +61,17 @@ export default function ScheduleScreen() {
         />
 
         {/* Stepper */}
-        <View className="items-center rounded-4xl border border-white/[0.06] bg-white/[0.02] py-8">
+        <View
+          className="items-center rounded-3xl border border-ink-900/[0.06] bg-paper-card py-8"
+          style={shadow.card}
+        >
           <SectionLabel>Days off between drinks</SectionLabel>
           <View className="mt-4 flex-row items-center gap-7">
             <StepButton icon="minus" onPress={() => bump(-1)} />
             <View className="items-center" style={{ minWidth: 116 }}>
               <Text
-                className="text-[76px] font-light"
-                style={{ color: palette.label, letterSpacing: -3, lineHeight: 82 }}
+                className="text-ink-900"
+                style={{ fontFamily: serif, fontSize: 78, lineHeight: 84, letterSpacing: -1 }}
               >
                 {days}
               </Text>
@@ -95,8 +98,8 @@ export default function ScheduleScreen() {
                   <View
                     className="rounded-full border px-4 py-2"
                     style={{
-                      borderColor: on ? `${palette.accent}66` : "rgba(255,255,255,0.07)",
-                      backgroundColor: on ? `${palette.accent}14` : "transparent",
+                      borderColor: on ? palette.accent : palette.hairline,
+                      backgroundColor: on ? palette.accentSoft : "transparent",
                     }}
                   >
                     <Text
@@ -115,11 +118,11 @@ export default function ScheduleScreen() {
         {/* Notifications */}
         <Card className="mt-3 flex-row items-center justify-between">
           <View className="flex-1 flex-row items-center gap-3 pr-4">
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-white/[0.04]">
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-ink-900/[0.04]">
               <Icon name={notify ? "bell" : "bellOff"} size={19} color={palette.label2} />
             </View>
             <View className="flex-1">
-              <Text className="text-[15px] font-semibold text-white">
+              <Text className="text-[15px] font-semibold text-ink-900">
                 Remind me when eligible
               </Text>
               <Text className="mt-0.5 text-xs text-ink-500">
@@ -148,8 +151,8 @@ export default function ScheduleScreen() {
       </ScrollView>
 
       <View
-        style={{ paddingBottom: insets.bottom + 12 }}
-        className="absolute inset-x-0 bottom-0 gap-2 border-t border-white/[0.06] bg-ink-900/80 px-5 pt-3"
+        style={{ paddingBottom: insets.bottom + 12, ...shadow.float }}
+        className="absolute inset-x-0 bottom-0 gap-2 border-t border-ink-900/[0.06] bg-paper px-5 pt-3"
       >
         <Button
           label={saving ? "Saving…" : isEditing ? "Update schedule" : "Create schedule"}
@@ -174,7 +177,7 @@ function StepButton({
 }) {
   return (
     <PressableScale haptic="none" onPress={onPress} activeScale={0.9} style={{ borderRadius: 999 }}>
-      <View className="h-14 w-14 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04]">
+      <View className="h-14 w-14 items-center justify-center rounded-full border border-ink-900/[0.08] bg-ink-900/[0.03]">
         <Icon name={icon} size={22} color={palette.label} strokeWidth={2.2} />
       </View>
     </PressableScale>

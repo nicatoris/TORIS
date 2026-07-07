@@ -5,36 +5,41 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Near-black neutral surfaces with progressively lighter fills.
+        // Warm paper canvas + ink text. `ink` scale runs light -> dark here:
+        // 900 = darkest ink text, 500 = mid, low numbers = surfaces.
+        paper: {
+          DEFAULT: "#F4F1E9",
+          raised: "#FBF9F3",
+          card: "#FFFFFF",
+          alt: "#FAF8F2",
+        },
         ink: {
-          900: "#050506", // app base
-          850: "#0C0C0E", // raised base
-          800: "#141416", // grouped card
-          700: "#1B1B1E", // elevated / input / chip
-          600: "#242427", // border
-          500: "#9A9AA2", // secondary label
+          900: "#1B1B16", // primary text
+          700: "#4A4842",
+          500: "#6C6A60", // secondary text
+          400: "#A6A399", // tertiary text
         },
-        // Primary tint + Leaf Tea (kratom leaf) — refined emerald
+        // Primary tint + Leaf Tea — deep botanical green
         leaf: {
-          300: "#7BF0C4",
-          400: "#34E0A1",
-          500: "#34E0A1",
-          600: "#12B981",
+          300: "#3E7A5B",
+          400: "#2F5D45",
+          500: "#2F5D45",
+          600: "#234A36",
         },
-        // Extract — soft violet
+        // Extract — warm clay
         extract: {
-          400: "#C08BFF",
-          500: "#8B5CF6",
+          400: "#B4623C",
+          500: "#8F4A2B",
         },
         // Caution (schedule hold), used sparingly
         warn: {
-          400: "#FFC24B",
-          500: "#FFB020",
+          400: "#B5852A",
+          500: "#8F6816",
         },
         // Destructive
         danger: {
-          400: "#FF7A73",
-          500: "#FF5E57",
+          400: "#B4443C",
+          500: "#8F332C",
         },
         // Medal accent
         gold: {
@@ -48,6 +53,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["System"],
+        serif: ["Georgia"],
       },
     },
   },

@@ -1,40 +1,64 @@
 /**
- * Central design tokens shared by JS-driven visuals (SVG, Reanimated) that
- * can't read Tailwind classes. Keep in sync with tailwind.config.js.
+ * Central design tokens for the light, editorial theme. Shared by JS-driven
+ * visuals (SVG, Reanimated, shadows) that can't read Tailwind classes.
+ * Keep in sync with tailwind.config.js.
  */
 import { Easing, WithSpringConfig, WithTimingConfig } from "react-native-reanimated";
 
 export const palette = {
-  bg: "#050506",
-  bgRaised: "#0C0C0E",
-  card: "#141416",
-  cardHi: "#1B1B1E",
-  border: "#242427",
-  hairline: "rgba(255,255,255,0.07)",
+  // Warm paper canvas + floating white surfaces
+  bg: "#F4F1E9",
+  bgRaised: "#FBF9F3",
+  card: "#FFFFFF",
+  cardAlt: "#FAF8F2",
+  border: "rgba(26,26,21,0.08)",
+  hairline: "rgba(26,26,21,0.10)",
 
-  label: "#F5F5F7",
-  label2: "#9A9AA2",
-  label3: "#5C5C63",
+  // Warm ink text
+  label: "#1B1B16",
+  label2: "#6C6A60",
+  label3: "#A6A399",
 
-  // Single signature accent — a refined emerald with a lighter tip for gradients
-  accent: "#34E0A1",
-  accentDeep: "#12B981",
-  accentSoft: "rgba(52,224,161,0.14)",
+  // Signature accent — a deep botanical green
+  accent: "#2F5D45",
+  accentDeep: "#234A36",
+  accentBright: "#3E7A5B",
+  accentSoft: "rgba(47,93,69,0.10)",
+  onAccent: "#F6F4EC",
 
-  extract: "#C08BFF",
-  extractDeep: "#8B5CF6",
+  // Leaf Tea shares the green; Extract is a warm clay
+  extract: "#B4623C",
+  extractDeep: "#8F4A2B",
 
-  warn: "#FFC24B",
-  danger: "#FF5E57",
+  warn: "#B5852A",
+  danger: "#B4443C",
 };
+
+/** Soft editorial shadows. Applied via style props (web -> box-shadow). */
+export const shadow = {
+  card: {
+    shadowColor: "#1A1A15",
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2,
+  },
+  float: {
+    shadowColor: "#141410",
+    shadowOpacity: 0.14,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 10,
+  },
+};
+
+/** Serif display family — editorial headlines & numerals. Georgia on iOS. */
+export const serif = "Georgia";
 
 /** Physical spring presets — reuse so motion reads as one system. */
 export const springs = {
-  /** Snappy press/return */
   press: { mass: 0.5, damping: 15, stiffness: 320 } as WithSpringConfig,
-  /** Gentle content settle */
   gentle: { mass: 0.9, damping: 18, stiffness: 160 } as WithSpringConfig,
-  /** Bouncy, for celebratory moments */
   bouncy: { mass: 0.7, damping: 11, stiffness: 220 } as WithSpringConfig,
 };
 

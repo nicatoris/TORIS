@@ -4,27 +4,30 @@ import { useRouter } from "expo-router";
 import { PressableScale } from "./PressableScale";
 import { Icon, IconName } from "./Icon";
 import { DrinkType } from "@/lib/types";
-import { palette } from "@/lib/theme";
+import { palette, serif, shadow } from "@/lib/theme";
 
-/** Rounded surface card. */
+/** Floating white surface with a soft editorial shadow + hairline. */
 export function Card({
   children,
   className = "",
+  style,
   ...rest
 }: ViewProps & { className?: string }) {
   return (
     <View
       {...rest}
-      className={`rounded-4xl border border-white/[0.06] bg-ink-800 p-5 ${className}`}
+      style={[shadow.card, style]}
+      className={`rounded-3xl border border-ink-900/[0.06] bg-paper-card p-5 ${className}`}
     >
       {children}
     </View>
   );
 }
 
+/** Magazine-style kicker label. */
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <Text className="text-[11px] font-semibold uppercase tracking-[2px] text-ink-500">
+    <Text className="text-[11px] font-semibold uppercase tracking-[2.5px] text-ink-400">
       {children}
     </Text>
   );
@@ -49,12 +52,12 @@ export function Button({
 }: ButtonProps) {
   const bg: Record<NonNullable<ButtonProps["variant"]>, string> = {
     primary: palette.accent,
-    secondary: "rgba(255,255,255,0.06)",
+    secondary: palette.card,
     ghost: "transparent",
-    danger: "rgba(255,94,87,0.12)",
+    danger: "rgba(180,68,60,0.10)",
   };
   const fg: Record<NonNullable<ButtonProps["variant"]>, string> = {
-    primary: "#04140D",
+    primary: palette.onAccent,
     secondary: palette.label,
     ghost: palette.label2,
     danger: palette.danger,
@@ -71,8 +74,9 @@ export function Button({
         className="flex-row items-center justify-center gap-2 rounded-full py-[17px]"
         style={{
           backgroundColor: bg[variant],
-          borderWidth: variant === "ghost" ? 1 : 0,
-          borderColor: "rgba(255,255,255,0.1)",
+          borderWidth: variant === "secondary" || variant === "ghost" ? 1 : 0,
+          borderColor: palette.hairline,
+          ...(variant === "primary" ? shadow.card : null),
         }}
       >
         {icon ? (
@@ -98,11 +102,14 @@ export function ModalHeader({
   return (
     <View className="mb-6 flex-row items-start justify-between">
       <View className="flex-1 pr-4 pt-1">
-        <Text className="text-[30px] font-bold tracking-tight text-white">
+        <Text
+          className="text-[32px] text-ink-900"
+          style={{ fontFamily: serif, letterSpacing: -0.5 }}
+        >
           {title}
         </Text>
         {subtitle ? (
-          <Text className="mt-1 text-[13px] text-ink-500">{subtitle}</Text>
+          <Text className="mt-1.5 text-[13px] text-ink-500">{subtitle}</Text>
         ) : null}
       </View>
       <PressableScale
@@ -110,7 +117,10 @@ export function ModalHeader({
         onPress={() => router.back()}
         style={{ borderRadius: 999 }}
       >
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-white/[0.06]">
+        <View
+          className="h-9 w-9 items-center justify-center rounded-full border border-ink-900/[0.06] bg-paper-card"
+          style={shadow.card}
+        >
           <Icon name="close" size={18} color={palette.label2} />
         </View>
       </PressableScale>
@@ -124,7 +134,7 @@ export function DrinkBadge({ type }: { type: DrinkType }) {
   return (
     <View
       className="flex-row items-center gap-1.5 self-start rounded-full px-3 py-1.5"
-      style={{ backgroundColor: `${color}1A` }}
+      style={{ backgroundColor: `${color}16` }}
     >
       <Icon name={isExtract ? "flask" : "leaf"} size={13} color={color} strokeWidth={2} />
       <Text className="text-xs font-semibold" style={{ color }}>
@@ -146,10 +156,16 @@ export function EmptyState({
 }) {
   return (
     <View className="items-center px-8 py-16">
-      <View className="h-16 w-16 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.03]">
+      <View
+        className="h-16 w-16 items-center justify-center rounded-full border border-ink-900/[0.06] bg-paper-card"
+        style={shadow.card}
+      >
         <Icon name={icon} size={28} color={palette.label2} />
       </View>
-      <Text className="mt-5 text-center text-[17px] font-semibold text-white">
+      <Text
+        className="mt-5 text-center text-[20px] text-ink-900"
+        style={{ fontFamily: serif }}
+      >
         {title}
       </Text>
       <Text className="mt-1.5 text-center text-[13px] leading-5 text-ink-500">

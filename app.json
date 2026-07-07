@@ -6,12 +6,12 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "ksafe",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#050506"
+      "backgroundColor": "#F4F1E9"
     },
     "ios": {
       "supportsTablet": true,
@@ -24,7 +24,7 @@
       "package": "com.ksafe.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#050506"
+        "backgroundColor": "#F4F1E9"
       }
     },
     "web": {
@@ -37,7 +37,7 @@
       [
         "expo-notifications",
         {
-          "color": "#34E0A1"
+          "color": "#2F5D45"
         }
       ]
     ],

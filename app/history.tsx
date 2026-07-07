@@ -5,12 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useKratom } from "@/store/KratomStore";
 import { PressableScale } from "@/components/PressableScale";
-import { AuroraBackground } from "@/components/AuroraBackground";
+import { PaperBackground } from "@/components/PaperBackground";
 import { Icon } from "@/components/Icon";
 import { DrinkBadge, EmptyState, ModalHeader } from "@/components/ui";
 import { formatShort, fromDayKey, MONTHS, relativeLabel } from "@/lib/dates";
 import { Drink, DrinkType } from "@/lib/types";
-import { palette } from "@/lib/theme";
+import { palette, serif, shadow } from "@/lib/theme";
 
 interface DaySummary {
   day: string;
@@ -52,9 +52,9 @@ export default function History() {
   }, [drinks]);
 
   return (
-    <View className="flex-1 bg-ink-900">
-      <AuroraBackground />
-      <View style={{ paddingTop: 20, paddingHorizontal: 20 }}>
+    <View className="flex-1 bg-paper">
+      <PaperBackground />
+      <View style={{ paddingTop: 20, paddingHorizontal: 22 }}>
         <ModalHeader
           title="Intake history"
           subtitle={`${drinks.length} ${drinks.length === 1 ? "drink" : "drinks"} logged across ${
@@ -75,12 +75,12 @@ export default function History() {
           keyExtractor={(item) => item.day}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 22,
             paddingBottom: insets.bottom + 24,
           }}
           stickySectionHeadersEnabled={false}
           renderSectionHeader={({ section }) => (
-            <Text className="mb-2 mt-4 text-xs font-bold uppercase tracking-widest text-ink-500">
+            <Text className="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-[2.5px] text-ink-400">
               {section.title}
             </Text>
           )}
@@ -103,15 +103,15 @@ function DayRow({
   onPress: () => void;
 }) {
   return (
-    <PressableScale onPress={onPress} className="mb-2.5" style={{ borderRadius: 24 }}>
-      <View className="flex-row items-center gap-3 rounded-4xl border border-white/[0.06] bg-white/[0.02] p-3.5">
-        <View className="h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04]">
-          <Text className="text-[18px] font-semibold text-white">
+    <PressableScale onPress={onPress} className="mb-2.5" style={{ borderRadius: 24, ...shadow.card }}>
+      <View className="flex-row items-center gap-3 rounded-3xl border border-ink-900/[0.06] bg-paper-card p-3.5">
+        <View className="h-12 w-12 items-center justify-center rounded-2xl bg-ink-900/[0.04]">
+          <Text className="text-[18px] font-semibold text-ink-900" style={{ fontFamily: serif }}>
             {fromDayKey(summary.day).getDate()}
           </Text>
         </View>
         <View className="flex-1">
-          <Text className="text-[15px] font-semibold text-white">
+          <Text className="text-[15px] font-semibold text-ink-900">
             {formatShort(summary.day)}
           </Text>
           <Text className="text-xs text-ink-500">

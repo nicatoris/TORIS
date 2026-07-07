@@ -29,7 +29,7 @@ export function Toggle({ value, onChange }: Props) {
     backgroundColor: interpolateColor(
       tint.value,
       [0, 1],
-      ["#2A2A2E", palette.accentDeep],
+      ["rgba(26,26,21,0.16)", palette.accent],
     ),
   }));
 

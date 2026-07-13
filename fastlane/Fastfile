@@ -1,0 +1,40 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build KSafe and upload it to TestFlight"
+  lane :release_testflight do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_content: ENV["ASC_KEY_CONTENT"],
+      is_key_content_base64: true,
+      in_house: false,
+    )
+
+    # Automatic signing: let Xcode/Fastlane request and install a
+    # distribution profile using the App Store Connect API key, rather
+    # than requiring a pre-managed cert/profile pair (match, manual p12s).
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "ios/KSafe.xcodeproj",
+      team_id: ENV["APPLE_TEAM_ID"],
+    )
+
+    build_app(
+      workspace: "ios/KSafe.xcworkspace",
+      scheme: "KSafe",
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "automatic",
+        teamID: ENV["APPLE_TEAM_ID"],
+      },
+      xcargs: "-allowProvisioningUpdates",
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+    )
+  end
+end

@@ -98,6 +98,41 @@ Notes:
   warning.
 - Haptics and the liquid‑glass blur render fully on a real device.
 
+## Shipping a TestFlight build
+
+Builds go out via **GitHub Actions + Fastlane**, not Expo's cloud build
+service (EAS) — the CI runner uses a real macOS box with Xcode, generating
+the native iOS project fresh from this repo (`npx expo prebuild`) each run.
+The app's code never changes for this; only the build path does.
+
+**One-time setup, done once by you:**
+
+1. **Apple Developer Program** membership ($99/yr) — required by Apple for
+   any TestFlight distribution, regardless of build tooling.
+2. Create an **App Store Connect API key**: App Store Connect → Users and
+   Access → Integrations → App Store Connect API → **Generate API Key**
+   (role: **App Manager** or **Admin**). Note the **Key ID** and **Issuer
+   ID**, and download the `.p8` file — Apple only lets you download it once.
+3. Create the app record in App Store Connect (My Apps → **+** → New App)
+   using bundle ID `com.ksafe.app`, if it doesn't exist yet.
+4. In this repo's **Settings → Secrets and variables → Actions**, add:
+   | Secret | Value |
+   |---|---|
+   | `ASC_KEY_ID` | the Key ID from step 2 |
+   | `ASC_ISSUER_ID` | the Issuer ID from step 2 |
+   | `ASC_KEY_CONTENT` | the `.p8` file's contents, base64‑encoded: `base64 -i AuthKey_XXXXX.p8 \| pbcopy` |
+   | `APPLE_TEAM_ID` | your 10‑character Apple Developer Team ID |
+
+**Every time you want a new TestFlight build:** open this repo on GitHub →
+**Actions** tab → **iOS – Build & Upload to TestFlight** → **Run workflow**.
+It's manual‑only by design (it submits a real build to Apple), takes
+roughly 15–25 minutes, and the build shows up in TestFlight a little after
+that once Apple finishes processing it.
+
+Locally on a Mac, the same pipeline is `npx expo prebuild --platform ios &&
+cd ios && pod install && cd .. && bundle exec fastlane ios
+release_testflight` (with the same four env vars exported).
+
 ## Disclaimer
 
 KSafe is a self‑tracking aid, not medical advice. If you're managing kratom

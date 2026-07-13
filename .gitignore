@@ -9,6 +9,19 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Native projects are generated fresh by `expo prebuild` (see the
+# ios-testflight GitHub Actions workflow) rather than committed, so
+# they never drift from app.json.
+/ios/
+/android/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+/vendor/bundle/
+
 # Native
 *.orig.*
 *.jks

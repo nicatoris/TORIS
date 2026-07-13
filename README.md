@@ -1,9 +1,28 @@
 # KSafe 🌿
 
-A modern, sleek **kratom & mitragynine‑extract intake tracker** for iOS, built
-with Expo. KSafe helps you monitor consumption, keep a mindful "Safe Schedule,"
-and reduce withdrawal symptoms and portion dependence — with smooth animations,
+A modern, sleek **kratom & mitragynine‑extract intake tracker** for iOS.
+KSafe helps you monitor consumption, keep a mindful "Safe Schedule," and
+reduce withdrawal symptoms and portion dependence — with smooth animations,
 haptics, and a satisfying medals system to keep you motivated.
+
+## Two implementations
+
+- **`apple/` — native Swift/SwiftUI (the shipping app).** A full rewrite
+  with a *Liquid Metal & Glass* design: deep graphite canvas, smoked-glass
+  panels, brushed-silver numerals with a moving specular highlight, emerald
+  and copper metallic accents. Zero third-party dependencies. This is what
+  the TestFlight pipeline builds.
+- **Repo root (`app/`, `components/`, `lib/`, `store/`) — the original
+  React Native/Expo implementation**, kept as a reference and for quick
+  Expo Go preview. Same features, earlier light-editorial design.
+
+To open the native app locally on a Mac:
+
+```bash
+brew install xcodegen
+xcodegen generate --spec apple/project.yml
+open apple/KSafe.xcodeproj
+```
 
 ## Features
 
@@ -100,10 +119,10 @@ Notes:
 
 ## Shipping a TestFlight build
 
-Builds go out via **GitHub Actions + Fastlane**, not Expo's cloud build
-service (EAS) — the CI runner uses a real macOS box with Xcode, generating
-the native iOS project fresh from this repo (`npx expo prebuild`) each run.
-The app's code never changes for this; only the build path does.
+Builds go out via **GitHub Actions + Fastlane**. The CI runner is a real
+macOS box with Xcode: it generates `apple/KSafe.xcodeproj` from
+`apple/project.yml` with XcodeGen, then builds and uploads the native
+SwiftUI app. No Expo, no Node, no CocoaPods.
 
 **One-time setup, done once by you:**
 
@@ -129,9 +148,9 @@ It's manual‑only by design (it submits a real build to Apple), takes
 roughly 15–25 minutes, and the build shows up in TestFlight a little after
 that once Apple finishes processing it.
 
-Locally on a Mac, the same pipeline is `npx expo prebuild --platform ios &&
-cd ios && pod install && cd .. && bundle exec fastlane ios
-release_testflight` (with the same four env vars exported).
+Locally on a Mac, the same pipeline is `xcodegen generate --spec
+apple/project.yml && bundle exec fastlane ios release_testflight` (with
+the same four env vars exported).
 
 ## Disclaimer
 

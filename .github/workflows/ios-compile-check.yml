@@ -1,0 +1,33 @@
+name: iOS – Compile check
+
+# Compiles the native SwiftUI app (no signing, no upload) whenever its
+# sources change, so Swift errors surface without needing Apple secrets.
+on:
+  push:
+    paths:
+      - "apple/**"
+      - ".github/workflows/ios-compile-check.yml"
+  workflow_dispatch: {}
+
+jobs:
+  compile:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the Xcode project
+        run: xcodegen generate --spec apple/project.yml
+
+      - name: Build for simulator (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project apple/KSafe.xcodeproj \
+            -scheme KSafe \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO

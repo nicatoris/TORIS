@@ -9,11 +9,15 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native projects are generated fresh by `expo prebuild` (see the
-# ios-testflight GitHub Actions workflow) rather than committed, so
-# they never drift from app.json.
+# Expo prebuild output (legacy RN build path) — never committed.
 /ios/
 /android/
+
+# The Xcode project for the native SwiftUI app is generated from
+# apple/project.yml by XcodeGen (locally or in CI) — never committed.
+apple/KSafe.xcodeproj/
+apple/build/
+apple/DerivedData/
 
 # Fastlane
 fastlane/report.xml

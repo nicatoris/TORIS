@@ -1,7 +1,7 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Build KSafe and upload it to TestFlight"
+  desc "Build KSafe (native SwiftUI, apple/) and upload it to TestFlight"
   lane :release_testflight do
     api_key = app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
@@ -16,12 +16,12 @@ platform :ios do
     # than requiring a pre-managed cert/profile pair (match, manual p12s).
     update_code_signing_settings(
       use_automatic_signing: true,
-      path: "ios/KSafe.xcodeproj",
+      path: "apple/KSafe.xcodeproj",
       team_id: ENV["APPLE_TEAM_ID"],
     )
 
     build_app(
-      workspace: "ios/KSafe.xcworkspace",
+      project: "apple/KSafe.xcodeproj",
       scheme: "KSafe",
       export_method: "app-store",
       export_options: {

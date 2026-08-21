@@ -27,6 +27,31 @@ jobs:
       - name: Generate the Xcode project
         run: xcodegen generate --spec apple/project.yml
 
+      # Fail early and legibly when credentials are missing. Without this,
+      # fastlane feeds an empty key to OpenSSL and dies with a bare
+      # "invalid curve name" stack trace that says nothing about secrets.
+      - name: Verify Apple credentials are configured
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          missing=()
+          for name in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_CONTENT APPLE_TEAM_ID; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Missing repository secrets: ${missing[*]}. Add them under Settings → Secrets and variables → Actions; see the README section 'Shipping a TestFlight build' for how to generate each one."
+            exit 1
+          fi
+          # Structural check only — never print the key itself.
+          if ! printf '%s' "$ASC_KEY_CONTENT" | base64 --decode 2>/dev/null | grep -q "BEGIN PRIVATE KEY"; then
+            echo "::error::ASC_KEY_CONTENT is not a base64-encoded .p8 private key. Re-encode the file Apple gave you with: base64 -i AuthKey_XXXXXXXX.p8 | pbcopy"
+            exit 1
+          fi
+          echo "All four Apple credentials are present and ASC_KEY_CONTENT decodes to a private key."
+
       - name: Build and upload to TestFlight
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}

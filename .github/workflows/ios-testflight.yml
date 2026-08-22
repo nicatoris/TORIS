@@ -59,3 +59,26 @@ jobs:
           ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: bundle exec fastlane ios release_testflight
+
+      # fastlane prints the real xcodebuild failure hundreds of lines before it
+      # exits, where log tailing never reaches it. Re-surface the parts that
+      # matter at the very end of the job so a failure is diagnosable without
+      # downloading the whole archive.
+      - name: Surface the xcodebuild failure
+        if: failure()
+        run: |
+          log="$HOME/Library/Logs/gym/KSafe-KSafe.log"
+          if [ ! -f "$log" ]; then
+            echo "No gym log at $log"
+            ls -la "$HOME/Library/Logs/gym" 2>/dev/null || echo "(no gym log directory)"
+            exit 0
+          fi
+          echo "=================== signing / profile lines ==================="
+          grep -inE "provisioning|profile|codesign|entitlement|No Accounts|signing certificate|Team|doesn't match|not found" "$log" \
+            | grep -viE "^.*note: (Disabling|Building)" | tail -40 || echo "(none matched)"
+          echo
+          echo "=================== error lines ==================="
+          grep -inE "error:|\*\* .* FAILED \*\*|Exit status" "$log" | tail -30 || echo "(none matched)"
+          echo
+          echo "=================== last 45 lines ==================="
+          tail -45 "$log"

@@ -3,6 +3,12 @@ default_platform(:ios)
 platform :ios do
   desc "Build KSafe (native SwiftUI, apple/) and upload it to TestFlight"
   lane :release_testflight do
+    # Apple rejects a build number it has already seen for the same
+    # MARKETING_VERSION, so every upload needs a fresh one. GITHUB_RUN_NUMBER
+    # increases by one per workflow run; local runs fall back to a timestamp.
+    build_number = ENV["GITHUB_RUN_NUMBER"] || Time.now.strftime("%y%m%d%H%M")
+    UI.message("Using build number #{build_number}")
+
     api_key = app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
@@ -28,7 +34,7 @@ platform :ios do
         signingStyle: "automatic",
         teamID: ENV["APPLE_TEAM_ID"],
       },
-      xcargs: "-allowProvisioningUpdates",
+      xcargs: "-allowProvisioningUpdates CURRENT_PROJECT_VERSION=#{build_number}",
     )
 
     upload_to_testflight(

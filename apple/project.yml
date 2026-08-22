@@ -15,7 +15,12 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ksafe.app
         PRODUCT_NAME: KSafe
+        # The version testers see. Bump this by hand for a feature release
+        # (2.0.0 -> 2.1.0); it is the only version field you need to edit.
         MARKETING_VERSION: "2.0.0"
+        # Placeholder for local builds only — the TestFlight lane overrides
+        # this per upload with the GitHub run number, since Apple rejects a
+        # build number it has already accepted for the same MARKETING_VERSION.
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.9"
         CODE_SIGN_STYLE: Automatic

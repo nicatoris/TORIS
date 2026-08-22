@@ -75,7 +75,7 @@ jobs:
               | grep -viE "note: (Disabling|Building)" | tail -40 || echo "(nothing matched)"
             if grep -q "Cloud signing permission error" /tmp/fastlane.log; then
               echo ""
-              echo "::error::Apple rejected distribution signing with 'Cloud signing permission error'. The build compiled and archived fine — this is an App Store Connect account permission, not a code problem. Check, in order: (1) the App Store Connect API key's role must be App Manager or Admin, not Developer — a Developer key can create the development certificate this build already got, but not a distribution one; (2) accept any pending agreement at App Store Connect -> Business -> Agreements, since an unsigned Program License Agreement blocks all distribution signing; (3) confirm the registered bundle ID and the App Store Connect app record both match PRODUCT_BUNDLE_IDENTIFIER in apple/project.yml — run the 'iOS - Diagnose signing' workflow, which lists what the key can actually see."
+              echo "::error::Apple rejected distribution signing with 'Cloud signing permission error'. The app compiles, archives and signs for development — only DISTRIBUTION signing is refused. Apple restricts distribution certificates to the Account Holder and Admin roles; an App Manager key can create the development certificate this build already got, and nothing more. Fix: App Store Connect -> Users and Access -> Integrations -> edit the API key and set its access to Admin (or generate a new Admin key and update ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_CONTENT). Run the 'iOS - Diagnose signing' workflow afterwards to confirm."
             fi
             echo "================= end diagnosis (exit $status) ================="
             exit "$status"

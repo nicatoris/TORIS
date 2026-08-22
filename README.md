@@ -130,7 +130,7 @@ SwiftUI app. No Expo, no Node, no CocoaPods.
    any TestFlight distribution, regardless of build tooling.
 2. Create an **App Store Connect API key**: App Store Connect → Users and
    Access → Integrations → App Store Connect API → **Generate API Key**
-   (role: **App Manager** or **Admin**). Note the **Key ID** and **Issuer
+   (role: **Admin** — Apple restricts distribution certificates to Account Holder and Admin; an App Manager key can only create *development* certificates and distribution signing will fail). Note the **Key ID** and **Issuer
    ID**, and download the `.p8` file — Apple only lets you download it once.
 3. Create the app record in App Store Connect (My Apps → **+** → New App)
    using bundle ID `ksafetea`, if it doesn't exist yet.

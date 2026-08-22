@@ -1,46 +1,79 @@
+require "base64"
+require "shellwords"
+require "tmpdir"
+
 default_platform(:ios)
 
 platform :ios do
   desc "Build KSafe (native SwiftUI, apple/) and upload it to TestFlight"
   lane :release_testflight do
+    team_id = ENV["APPLE_TEAM_ID"]
+    key_id = ENV["ASC_KEY_ID"]
+    issuer_id = ENV["ASC_ISSUER_ID"]
+
     # Apple rejects a build number it has already seen for the same
     # MARKETING_VERSION, so every upload needs a fresh one. GITHUB_RUN_NUMBER
     # increases by one per workflow run; local runs fall back to a timestamp.
     build_number = ENV["GITHUB_RUN_NUMBER"] || Time.now.strftime("%y%m%d%H%M")
     UI.message("Using build number #{build_number}")
 
+    # Authenticates fastlane itself (the TestFlight upload at the end).
     api_key = app_store_connect_api_key(
-      key_id: ENV["ASC_KEY_ID"],
-      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_id: key_id,
+      issuer_id: issuer_id,
       key_content: ENV["ASC_KEY_CONTENT"],
       is_key_content_base64: true,
       in_house: false,
     )
 
-    # Automatic signing: let Xcode/Fastlane request and install a
-    # distribution profile using the App Store Connect API key, rather
-    # than requiring a pre-managed cert/profile pair (match, manual p12s).
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "apple/KSafe.xcodeproj",
-      team_id: ENV["APPLE_TEAM_ID"],
-    )
+    # xcodebuild is a separate process and cannot see the object above. On a
+    # CI runner there is no signed-in Xcode account, so automatic signing has
+    # no way to reach App Store Connect and fails with "No Accounts" / "No
+    # profiles for 'com.ksafe.app' were found". Handing xcodebuild the .p8 on
+    # disk plus the key and issuer ids lets it create and download the
+    # distribution profile on its own.
+    key_dir = Dir.mktmpdir("asc-key")
+    key_path = File.join(key_dir, "AuthKey_#{key_id}.p8")
+    File.write(key_path, Base64.decode64(ENV["ASC_KEY_CONTENT"].to_s))
+    File.chmod(0o600, key_path)
 
-    build_app(
-      project: "apple/KSafe.xcodeproj",
-      scheme: "KSafe",
-      export_method: "app-store",
-      export_options: {
-        signingStyle: "automatic",
-        teamID: ENV["APPLE_TEAM_ID"],
-      },
-      xcargs: "-allowProvisioningUpdates CURRENT_PROJECT_VERSION=#{build_number}",
-    )
+    auth_args = [
+      "-allowProvisioningUpdates",
+      "-authenticationKeyPath", key_path.shellescape,
+      "-authenticationKeyID", key_id.to_s.shellescape,
+      "-authenticationKeyIssuerID", issuer_id.to_s.shellescape,
+    ].join(" ")
 
-    upload_to_testflight(
-      api_key: api_key,
-      skip_waiting_for_build_processing: true,
-      distribute_external: false,
-    )
+    begin
+      update_code_signing_settings(
+        use_automatic_signing: true,
+        path: "apple/KSafe.xcodeproj",
+        team_id: team_id,
+      )
+
+      build_app(
+        project: "apple/KSafe.xcodeproj",
+        scheme: "KSafe",
+        configuration: "Release",
+        export_method: "app-store",
+        export_options: {
+          signingStyle: "automatic",
+          teamID: team_id,
+        },
+        # Archive step.
+        xcargs: "#{auth_args} CURRENT_PROJECT_VERSION=#{build_number} DEVELOPMENT_TEAM=#{team_id.to_s.shellescape}",
+        # Export step runs as its own xcodebuild invocation and needs the
+        # same credentials, or the export fails the way the archive did.
+        export_xcargs: auth_args,
+      )
+
+      upload_to_testflight(
+        api_key: api_key,
+        skip_waiting_for_build_processing: true,
+        distribute_external: false,
+      )
+    ensure
+      FileUtils.remove_entry(key_dir) if key_dir && File.directory?(key_dir)
+    end
   end
 end

@@ -58,27 +58,26 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: bundle exec fastlane ios release_testflight
+        run: |
+          set -o pipefail
+          bundle exec fastlane ios release_testflight 2>&1 | tee /tmp/fastlane.log
 
-      # fastlane prints the real xcodebuild failure hundreds of lines before it
-      # exits, where log tailing never reaches it. Re-surface the parts that
-      # matter at the very end of the job so a failure is diagnosable without
-      # downloading the whole archive.
+      # fastlane prints the real failure hundreds of lines before it exits,
+      # where log tailing never reaches it. gym only tees the *archive* to its
+      # own log, so the export failure lives solely in fastlane's stdout —
+      # hence the tee above. Re-surface what matters at the very end of the
+      # job so a failure is diagnosable in one look.
       - name: Surface the xcodebuild failure
         if: failure()
         run: |
-          log="$HOME/Library/Logs/gym/KSafe-KSafe.log"
-          if [ ! -f "$log" ]; then
-            echo "No gym log at $log"
-            ls -la "$HOME/Library/Logs/gym" 2>/dev/null || echo "(no gym log directory)"
-            exit 0
+          fl=/tmp/fastlane.log
+          if [ -f "$fl" ]; then
+            echo "=================== export / signing errors ==================="
+            grep -inE "exportArchive|IDEProvisioning|No profiles|No signing certificate|doesn't (match|support)|Provisioning profile|not available|permission|Forbidden|401|403|no such app|does not exist|error:" "$fl" \
+              | grep -viE "note: (Disabling|Building)" | tail -45 || echo "(nothing matched)"
+            echo
+            echo "=================== last 40 lines of fastlane ==================="
+            tail -40 "$fl"
+          else
+            echo "(no /tmp/fastlane.log)"
           fi
-          echo "=================== signing / profile lines ==================="
-          grep -inE "provisioning|profile|codesign|entitlement|No Accounts|signing certificate|Team|doesn't match|not found" "$log" \
-            | grep -viE "^.*note: (Disabling|Building)" | tail -40 || echo "(none matched)"
-          echo
-          echo "=================== error lines ==================="
-          grep -inE "error:|\*\* .* FAILED \*\*|Exit status" "$log" | tail -30 || echo "(none matched)"
-          echo
-          echo "=================== last 45 lines ==================="
-          tail -45 "$log"

@@ -13,7 +13,7 @@ targets:
       gatherCoverageData: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ksafe.app
+        PRODUCT_BUNDLE_IDENTIFIER: ksafetea
         PRODUCT_NAME: KSafe
         # The version testers see. Bump this by hand for a feature release
         # (2.0.0 -> 2.1.0); it is the only version field you need to edit.

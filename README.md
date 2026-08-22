@@ -133,7 +133,7 @@ SwiftUI app. No Expo, no Node, no CocoaPods.
    (role: **App Manager** or **Admin**). Note the **Key ID** and **Issuer
    ID**, and download the `.p8` file — Apple only lets you download it once.
 3. Create the app record in App Store Connect (My Apps → **+** → New App)
-   using bundle ID `com.ksafe.app`, if it doesn't exist yet.
+   using bundle ID `ksafetea`, if it doesn't exist yet.
 4. In this repo's **Settings → Secrets and variables → Actions**, add:
    | Secret | Value |
    |---|---|

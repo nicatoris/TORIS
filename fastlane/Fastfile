@@ -5,6 +5,10 @@ require "xcodeproj"
 
 default_platform(:ios)
 
+# Must match the App ID registered in the Apple Developer portal and the app
+# record in App Store Connect ("kSafeTea").
+BUNDLE_ID = "ksafetea".freeze
+
 # fastlane runs a lane's own Ruby from ./fastlane but runs actions from the
 # repo root, so one relative path means two different things depending on who
 # resolves it. Pin it absolutely instead of guessing which context applies.
@@ -57,7 +61,7 @@ platform :ios do
     # xcodebuild is a separate process and cannot see the object above. On a
     # CI runner there is no signed-in Xcode account, so automatic signing has
     # no route to App Store Connect and fails with "No Accounts" / "No
-    # profiles for 'com.ksafe.app' were found". Handing xcodebuild the .p8 on
+    # profiles for 'ksafetea' were found". Handing xcodebuild the .p8 on
     # disk plus the key and issuer ids lets it create and download the
     # distribution profile itself. These are plain flags, so they are safe in
     # :xcargs and reach the export step too, which needs them just as much.
@@ -133,15 +137,15 @@ platform :ios do
       apps = Spaceship::ConnectAPI::App.all
       UI.message("  #{apps.count} app(s) visible")
       apps.each { |a| UI.message("  - #{a.bundle_id}  (#{a.name})") }
-      match = apps.find { |a| a.bundle_id == "com.ksafe.app" }
-      UI.message(match ? "  OK: com.ksafe.app app record exists" : "  MISSING: no app record for com.ksafe.app")
+      match = apps.find { |a| a.bundle_id == BUNDLE_ID }
+      UI.message(match ? "  OK: #{BUNDLE_ID} app record exists" : "  MISSING: no app record for #{BUNDLE_ID}")
     end
 
     section("Registered bundle IDs (needed to make a profile)") do
       ids = Spaceship::ConnectAPI::BundleId.all
       UI.message("  #{ids.count} bundle id(s) visible")
       ids.each { |b| UI.message("  - #{b.identifier}  (#{b.name})") }
-      UI.message(ids.any? { |b| b.identifier == "com.ksafe.app" } ? "  OK: com.ksafe.app is registered" : "  MISSING: com.ksafe.app not registered")
+      UI.message(ids.any? { |b| b.identifier == BUNDLE_ID } ? "  OK: #{BUNDLE_ID} is registered" : "  MISSING: #{BUNDLE_ID} not registered")
     end
 
     section("Certificates") do

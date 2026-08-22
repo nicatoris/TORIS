@@ -5,11 +5,23 @@ require "xcodeproj"
 
 default_platform(:ios)
 
-PROJECT_PATH = "apple/KSafe.xcodeproj".freeze
+# fastlane runs a lane's own Ruby from ./fastlane but runs actions from the
+# repo root, so one relative path means two different things depending on who
+# resolves it. Pin it absolutely instead of guessing which context applies.
+def ksafe_project_path
+  found = ["apple/KSafe.xcodeproj", "../apple/KSafe.xcodeproj"]
+         .map { |p| File.expand_path(p) }
+         .find { |p| File.exist?(p) }
+  UI.user_error!("Could not find KSafe.xcodeproj. Run `xcodegen generate --spec apple/project.yml` first.") if found.nil?
+  found
+end
 
 platform :ios do
   desc "Build KSafe (native SwiftUI, apple/) and upload it to TestFlight"
   lane :release_testflight do
+    project_path = ksafe_project_path
+    UI.message("Project: #{project_path}")
+
     team_id = ENV["APPLE_TEAM_ID"]
     key_id = ENV["ASC_KEY_ID"]
     issuer_id = ENV["ASC_ISSUER_ID"]
@@ -25,7 +37,7 @@ platform :ios do
     # archive and the -exportArchive command, and xcodebuild rejects build
     # settings during export — that combination fails with exit 64 and a bare
     # usage dump. Only flags legal for both commands may live in :xcargs.
-    project = Xcodeproj::Project.open(PROJECT_PATH)
+    project = Xcodeproj::Project.open(project_path)
     project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings["CURRENT_PROJECT_VERSION"] = build_number
@@ -66,12 +78,12 @@ platform :ios do
       # which is why neither needs to be passed on the command line.
       update_code_signing_settings(
         use_automatic_signing: true,
-        path: PROJECT_PATH,
+        path: project_path,
         team_id: team_id,
       )
 
       build_app(
-        project: PROJECT_PATH,
+        project: project_path,
         scheme: "KSafe",
         configuration: "Release",
         export_method: "app-store",

@@ -59,25 +59,20 @@ jobs:
           ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          set -o pipefail
+          # fastlane prints the real diagnosis hundreds of lines before it
+          # exits, and gym tees only the *archive* to its own log — the export
+          # failure lives solely in fastlane's stdout. Capture it and re-print
+          # the relevant lines as the last thing this step does, so a failure
+          # is legible without digging through the whole log.
+          set +e
           bundle exec fastlane ios release_testflight 2>&1 | tee /tmp/fastlane.log
-
-      # fastlane prints the real failure hundreds of lines before it exits,
-      # where log tailing never reaches it. gym only tees the *archive* to its
-      # own log, so the export failure lives solely in fastlane's stdout —
-      # hence the tee above. Re-surface what matters at the very end of the
-      # job so a failure is diagnosable in one look.
-      - name: Surface the xcodebuild failure
-        if: failure()
-        run: |
-          fl=/tmp/fastlane.log
-          if [ -f "$fl" ]; then
-            echo "=================== export / signing errors ==================="
-            grep -inE "exportArchive|IDEProvisioning|No profiles|No signing certificate|doesn't (match|support)|Provisioning profile|not available|permission|Forbidden|401|403|no such app|does not exist|error:" "$fl" \
-              | grep -viE "note: (Disabling|Building)" | tail -45 || echo "(nothing matched)"
-            echo
-            echo "=================== last 40 lines of fastlane ==================="
-            tail -40 "$fl"
-          else
-            echo "(no /tmp/fastlane.log)"
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            echo ""
+            echo "=================== export / signing diagnosis ==================="
+            grep -inE "exportArchive|IDEProvisioning|No profiles|signing certificate|doesn't (match|support)|Provisioning profile|Signing Identity|not available|permission|Forbidden|40[13]|does not exist|error:" /tmp/fastlane.log \
+              | grep -viE "note: (Disabling|Building)" | tail -40 || echo "(nothing matched)"
+            echo "================= end diagnosis (exit $status) ================="
+            exit "$status"
           fi

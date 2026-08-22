@@ -1,0 +1,47 @@
+name: iOS – Diagnose signing
+
+# Read-only by default: asks App Store Connect what the API key can see, so a
+# signing failure can be pinned to an account/permission cause rather than
+# guessed at. Creates nothing unless allow_cert_create is set to "yes".
+on:
+  workflow_dispatch:
+    inputs:
+      allow_cert_create:
+        description: 'Also test creating a distribution certificate? This CONSUMES one of Apple\''s limited slots. Type "yes" only if asked to.'
+        required: false
+        default: "no"
+
+jobs:
+  diagnose:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby (for Fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Query App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ALLOW_CERT_CREATE: ${{ inputs.allow_cert_create == 'yes' && '1' || '0' }}
+        run: |
+          set +e
+          bundle exec fastlane ios diagnose_signing 2>&1 | tee /tmp/diagnose.log
+          status=${PIPESTATUS[0]}
+          set -e
+          echo ""
+          echo "=================== summary ==================="
+          grep -aE "^\[|OK:|MISSING:|NONE:|FAILED:|APPLE_TEAM_ID|===" /tmp/diagnose.log \
+            | sed -E 's/\x1b\[[0-9;]*m//g' \
+            | grep -vE "fastlane\.tools|Sending anonymous|Learn more|No personal|disable this|Driving the lane|Step: |^\[.*\]: $" \
+            | tail -60
+          echo "=================== end summary ==============="
+          exit "$status"

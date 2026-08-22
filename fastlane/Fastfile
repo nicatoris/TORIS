@@ -104,3 +104,78 @@ platform :ios do
     end
   end
 end
+
+platform :ios do
+  desc "Ask App Store Connect what this API key can actually see and do"
+  lane :diagnose_signing do
+    team_id = ENV["APPLE_TEAM_ID"]
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_content: ENV["ASC_KEY_CONTENT"],
+      is_key_content_base64: true,
+      in_house: false,
+    )
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(**api_key)
+
+    def section(title)
+      UI.message("")
+      UI.important("=== #{title} ===")
+      yield
+    rescue StandardError => e
+      UI.error("  FAILED: #{e.class}: #{e.message.to_s.lines.first.to_s.strip}")
+    end
+
+    UI.important("APPLE_TEAM_ID secret = #{team_id.inspect}")
+
+    section("App Store Connect apps (needed to upload)") do
+      apps = Spaceship::ConnectAPI::App.all
+      UI.message("  #{apps.count} app(s) visible")
+      apps.each { |a| UI.message("  - #{a.bundle_id}  (#{a.name})") }
+      match = apps.find { |a| a.bundle_id == "com.ksafe.app" }
+      UI.message(match ? "  OK: com.ksafe.app app record exists" : "  MISSING: no app record for com.ksafe.app")
+    end
+
+    section("Registered bundle IDs (needed to make a profile)") do
+      ids = Spaceship::ConnectAPI::BundleId.all
+      UI.message("  #{ids.count} bundle id(s) visible")
+      ids.each { |b| UI.message("  - #{b.identifier}  (#{b.name})") }
+      UI.message(ids.any? { |b| b.identifier == "com.ksafe.app" } ? "  OK: com.ksafe.app is registered" : "  MISSING: com.ksafe.app not registered")
+    end
+
+    section("Certificates") do
+      certs = Spaceship::ConnectAPI::Certificate.all
+      UI.message("  #{certs.count} certificate(s) visible")
+      certs.each { |c| UI.message("  - #{c.certificate_type}  #{c.display_name}  expires #{c.expiration_date}") }
+      dist = certs.select { |c| c.certificate_type.to_s.include?("DISTRIBUTION") }
+      UI.message(dist.any? ? "  OK: #{dist.count} distribution certificate(s)" : "  NONE: no distribution certificate exists yet")
+    end
+
+    section("Provisioning profiles") do
+      profiles = Spaceship::ConnectAPI::Profile.all
+      UI.message("  #{profiles.count} profile(s) visible")
+      profiles.each { |p| UI.message("  - #{p.name}  type=#{p.profile_type}  state=#{p.profile_state}") }
+      store = profiles.select { |p| p.profile_type.to_s == "IOS_APP_STORE" }
+      UI.message(store.any? ? "  OK: #{store.count} App Store profile(s)" : "  NONE: no IOS_APP_STORE profile exists")
+    end
+
+    # Opt-in only: Apple caps how many distribution certificates an account may
+    # hold, so this actually consumes one. Everything above is read-only.
+    if ENV["ALLOW_CERT_CREATE"] == "1"
+      section("Can this key CREATE a distribution certificate? (creates one!)") do
+        csr, _pkey = Spaceship::ConnectAPI::Certificate.create_certificate_signing_request
+        cert = Spaceship::ConnectAPI::Certificate.create(
+          certificate_type: Spaceship::ConnectAPI::Certificate::CertificateType::IOS_DISTRIBUTION,
+          csr_content: csr.to_pem,
+        )
+        UI.success("  YES — created #{cert.certificate_type} id=#{cert.id}. Distribution signing is permitted.")
+      end
+    else
+      UI.message("")
+      UI.important("=== Distribution-certificate creation probe: skipped ===")
+      UI.message("  Read-only run. Set ALLOW_CERT_CREATE=1 to test it — that consumes")
+      UI.message("  one of the limited distribution certificate slots on the account.")
+    end
+  end
+end
